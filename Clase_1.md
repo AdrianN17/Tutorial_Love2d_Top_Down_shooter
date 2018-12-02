@@ -2,6 +2,7 @@
 
 ## Que es Lua?
 ![alt text](https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Lua-logo-nolabel.svg/192px-Lua-logo-nolabel.svg.png)
+
 Lua es un lenguaje de Scripting, interpretado y de tipado dinámico, creado por miembros del grupo de Tecnología en Computación Gráfica (Tecgraf) en la Pontificia Universidad Católica de Río de Janeiro 
 
 ## Terminologias
