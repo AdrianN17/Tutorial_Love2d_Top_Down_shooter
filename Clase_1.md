@@ -54,9 +54,16 @@ Es igual a
 ```
 
 para solucionar eso, se debe declarar antes de la variable el argumento **local**
+
 ```lua
 	local x=0
 ```
+En lua es posible declarar varias variables al mismo tiempo
+
+```lua
+	local x,y,z=0,1,0
+```
+
 ### Tipos de datos
 
 En Lua existen 8 tipos de datos, de los cuales los mas utilizados son:
@@ -67,7 +74,7 @@ En Lua existen 8 tipos de datos, de los cuales los mas utilizados son:
 *	table
 *	nil
 
-nil viene a ser null, un dato nulo.
+**nil** viene a ser null, un dato nulo.
 
 ### Operadores
 
@@ -100,8 +107,14 @@ Existen Operadores Aritméticos, Relacionales y Lógicos.
 	1==0 and x==0 -- si, ambos deben coincidir en verdad
 	1==0 or x==0 -- no, uno de ellos puede ser verdadero y otro falso
 	not true -- reverso
-	
 ```
+#### Miscelaneas
+
+```lua
+	"hola" .. "mundo" -- concatenar
+	#myarray -- longitud de una cadena o tabla
+```
+
 ### Estructura condicional
 	
 ```lua
@@ -140,3 +153,64 @@ Tal como otros lenguajes de programacion, Lua cuenta con 3 tipos de estructura r
 		print("todavia continuo")
 	until (x==0)
 ```
+Ademas, puedes romper un bucle con el parámetro **break**
+
+```lua
+	for x=0,10,1 do
+		if(x==2) then
+			break
+		end
+	end
+	
+```
+
+### Funciones
+
+Una función es un grupo de sentencias que pueden ser invocadas en cualquier parte de grupo, separadas del código principal.
+
+```lua
+	function programa()
+		print("La suma es " .. suma(1+3)) -- retorna 4
+	end
+
+	function suma(a,b)
+		return a+b
+	end
+	
+	programa()
+```
+
+Las variables declaradas dentro de la función, si no son con el parámetro global, entonces sera posible acceder a ellas fuera de la misma función.
+
+```lua
+	x=9
+	function programa()
+		x=0
+	end
+	
+	programa()
+	print(x) -- devolvera 0
+```
+
+```lua
+	x=9
+	function programa()
+		local x=0
+	end
+	
+	programa()
+	print(x) -- devolvera 9
+```
+
+### Tablas
+
+El concepto de una tabla en Lua es un poco complejo de entender, las tablas vendrían a ser como un Arreglo, mas similar a los ArrayList de Java y Diccionarios en Python, pero de la misma manera, seria un objeto, así como los Json
+
+```lua
+	tabla = {}
+	tabla[1]=2
+	
+	print(tabla[1]) -- devuelve 2
+```
+
+Es posible generar programación orientada a objetos mediante las Tablas en Lua, ya que no se tiene soporte nativo para POO.
