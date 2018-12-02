@@ -3,11 +3,11 @@
 En este taller mediante la utilización del lenguaje Lua se planea la creación de un juego de vista superior o Top Down
 
 ## Indice
-* Introducción al lenguaje de programación Lua
-* Introducción al framework Love2d
-* Introducción a Tilemap
-* Generar entorno de videojuego
-* Creación y animación de personaje
-* Creación y animación del enemigo y objetos del mapa
-* Recomendaciones
+* [Introducción al lenguaje de programación Lua](https://github.com/AdrianN17/Tutorial_Love2d_Top_Down_shooter/blob/master/Clase_1.md)
+* [Introducción al framework Love2d](https://pages.github.com/)
+* [Introducción a Tilemap](https://pages.github.com/)
+* [Generar entorno de videojuego](https://pages.github.com/)
+* [Creación y animación de personaje](https://pages.github.com/)
+* [Creación y animación del enemigo y objetos del mapa](https://pages.github.com/)
+* [Recomendaciones finales](https://pages.github.com/)
 
