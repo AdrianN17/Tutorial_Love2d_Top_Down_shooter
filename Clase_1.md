@@ -156,8 +156,11 @@ java sintax
 	System.out.println("hola");
 	object obj = new object();
 ```
+
+```mermaid
 graph TD;
     A-->B;
     A-->C;
     B-->D;
     C-->D;
+```
