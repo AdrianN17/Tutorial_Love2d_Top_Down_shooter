@@ -1,3 +1,12 @@
+var renderer = new marked.Renderer();
+renderer.code = function (code, language) {
+    if(code.match(/^sequenceDiagram/)||code.match(/^graph/)){
+        return '<div class="mermaid">'+code+'</div>';
+    }
+    else{
+        return '<pre><code>'+code+'</code></pre>';
+    }
+};
 
 # Welcome to StackEdit!
 
