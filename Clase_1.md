@@ -1,6 +1,4 @@
-<script src="./mermaid.min.js"></script>
- <link rel="stylesheet" href="./mermaid.css">
- <script>mermaid.initialize({startOnLoad:true});</script>
+
 # Welcome to StackEdit!
 
 Hi! I'm your first Markdown file in **StackEdit**. If you want to learn about StackEdit, you can read me. If you want to play with Markdown, you can edit me. Once you have finished with me, you can create new files by opening the **file explorer** on the left corner of the navigation bar.
@@ -159,3 +157,8 @@ java sintax
 	System.out.println("hola");
 	object obj = new object();
 ```
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
