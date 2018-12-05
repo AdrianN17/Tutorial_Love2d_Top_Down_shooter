@@ -74,7 +74,7 @@ En Lua existen 8 tipos de datos, de los cuales los mas utilizados son:
 *	table
 *	nil
 
-**nil** viene a ser null, un dato nulo.
+**nil** viene a ser null, vacio.
 
 ### Operadores
 
@@ -214,3 +214,64 @@ El concepto de una tabla en Lua es un poco complejo de entender, las tablas vend
 ```
 
 Es posible generar programación orientada a objetos mediante las Tablas en Lua, ya que no se tiene soporte nativo para POO.
+
+Nota: Los arrays en Lua funcionan a partir del indice 1.
+
+Ademas de esto existen varios modos de alterar una tabla, usando las siguientes funciones:
+
+```lua
+	
+```
+
+### Iteradores
+
+Los iteradores son maneras mas legibles de recorrer un array.
+
+```lua
+	tabla={1,2,3}
+	
+	for i=1,tabla#,1 do
+		print(tabla[i])
+	end
+```
+
+Es una implementacion genérica, pero también se puede lograr de 2 maneras distintas
+
+```lua
+	tabla={1,2,3}
+	
+	for i,n in ipairs(tabla) do
+		print(n)
+	end
+```
+
+```lua
+	tabla={1,2,3]
+
+	for i,n in pairs(tabla) do
+		print(n)
+	end
+```
+
+La diferencia entre **ipairs** y **pairs**, es que ipairs valida los indices nulos y se detiene.
+Por ejemplo:
+```lua
+	table={1,nil,3}
+	for i,n in ipairs(tabla) do
+		print(n)
+	end
+	
+	for i,n in pairs(tabla) do
+		print(n)
+	end
+```
+
+El primer iterador usando ipairs se detiene cuando llega a nil, mientras que el segundo ignora el nil y continua
+
+ipairs resultado: 1
+pairs resultado:1 3
+
+
+
+
+
