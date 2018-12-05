@@ -219,9 +219,18 @@ Nota: Los arrays en Lua funcionan a partir del indice 1.
 
 Ademas de esto existen varios modos de alterar una tabla, usando las siguientes funciones:
 
+**table.insert (table, [pos,] value)**
+**table.remove (table [, pos])**
+**table.sort (table [, comp])**
 ```lua
+	table.insert(tabla,4) -- agrego el numero 4 en la ultima posicion, tambien se puede elegir la posicion que se desea colocar
+	table.insert(tabla,2,4)-- agrega en la posicion 2
 	
+	table.remove(tabla,1) -- elimino la posicion 1
+	table.sort(tabla) -- ordena una tabla, esto tambien se puede utilizar con una funcion de ordenamiento
+	table.sort(tabla,function(a,b) return a > b end)-- ordena de mayor a menor
 ```
+
 
 ### Iteradores
 
@@ -269,8 +278,8 @@ Por ejemplo:
 El primer iterador usando ipairs se detiene cuando llega a nil, mientras que el segundo ignora el nil y continua
 
 ipairs resultado: 1
-pairs resultado:1 3
 
+pairs resultado:1 3
 
 
 
