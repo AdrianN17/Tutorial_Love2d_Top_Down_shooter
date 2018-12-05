@@ -39,6 +39,22 @@ Lua se caracteriza por ser un lenguaje muy amigable para el programador, esta al
 
 Aplica los mismos conceptos que cualquier otro lenguaje de programación.
 
+### Comentarios
+Los comentarios en Lua se pueden generar de 2 maneras
+
+Para una linea se utiliza **--**
+
+Para mas de una linea se utiliza **--[[ ]]-- **
+
+```lua
+	-- Esto es un comentario
+
+	--[[
+		Esta es un
+		comentario
+	]]--
+```
+
 ### Variables
 
 Las variables de Lua por defecto son Globales, una similitud seria al public en las clases de Java
@@ -201,6 +217,22 @@ Las variables declaradas dentro de la función, si no son con el parámetro glob
 	programa()
 	print(x) -- devolvera 9
 ```
+Otra manera de declarar es mediante una función anónima:
+```lua
+	f=function(a,b) return print(a+b) end
+
+	f(1,2)
+```
+
+También es posible crear funciones locales, tal como sucede con las variables
+
+```lua
+	local function suma(a,b)
+		print(a+b)
+	end
+```
+
+
 
 ### Tablas
 
@@ -280,6 +312,57 @@ El primer iterador usando ipairs se detiene cuando llega a nil, mientras que el 
 ipairs resultado: 1
 
 pairs resultado:1 3
+
+### Modulos
+
+En Lua, cuando por ejemplo queremos crear una libreria o llamar un trozo de codigo creado, como por ejemplo
+
+```lua
+	--file suma.lua
+	function suma(a,b)
+		print(a+b)
+	end
+```
+
+Podemos llamarlo de la siguiente manera
+```lua
+	--main.lua
+	require "sumatoria"
+	suma(1,2) -- resultado 3
+```
+
+Otra manera distinta es utilizando tablas:
+
+```lua
+	--file operaciones.lua
+	
+	local operaciones={}
+	
+	function operacion:suma(a,b)
+		print(a+b)
+	end
+	
+	return operaciones
+```
+
+```lua
+	-- file main.lua
+
+	local operaciones = require "operaciones"
+
+	operaciones:suma(1,2) -- resultado 3
+```
+
+### Metatablas
+
+Una metatabla es una tabla que ayuda a modificar el comportamiento, por redundancia una tabla
+
+Existen 2 metodos utilizados
+
+**setmetatable (table, metatable)**
+**getmetatable (tabla)**
+
+
 
 
 
