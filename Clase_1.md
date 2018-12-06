@@ -383,7 +383,9 @@ Lua cuenta con librerías para matemática ,  manejo de excepciones y lectura de
 
 Ademas cuenta con muchas librerías de terceros en Internet.
 
-Fuentes:
+*** ***
+
+**Fuentes:**
 * [Tutorial_Lua_Ingles](https://www.tutorialspoint.com/lua/lua_metatables.htm)
 * [Tutorial_metatablas](http://lua.space/general/intro-to-metatables)
 * [Tutorial_corutinas](http://lua.space/gamedev/using-lua-coroutines-to-create-rpg)
