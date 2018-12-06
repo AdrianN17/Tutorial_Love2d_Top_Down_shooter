@@ -102,6 +102,7 @@ end
 
 El resultado seria algo como esto:
 
+![alt text](https://github.com/AdrianN17/Tutorial_Love2d_Top_Down_shooter/blob/master/etc/imagen1.bmp)
 
 Pero, si nos damos cuenta, el tamaño de la pantalla es muy grande, es posible reducirlo mediante la utilización del modulo love.windows, pero una manera mas ordenada es utilizar un archivo conf.lua
 
@@ -120,6 +121,8 @@ La funcion t.window.title se encarga de darle el titulo a la ventana
 La funcion t.window.width y t.window.height se encargan de las dimensiones de la pantalla
 
 Al agregar este archivo, nuestra pantalla se debería ver así:
+
+![alt text](https://github.com/AdrianN17/Tutorial_Love2d_Top_Down_shooter/blob/master/etc/imagen2.bmp)
 
 Ademas de estas funciones, existen otras que nos ayudan a realizar otras funciones, o activar y desactivar módulos.
 
