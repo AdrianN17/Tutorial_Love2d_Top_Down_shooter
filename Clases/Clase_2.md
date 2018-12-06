@@ -125,6 +125,8 @@ Ademas de estas funciones, existen otras que nos ayudan a realizar otras funcion
 
 ****
 
+**No se ha profundizado totalmente en ciertos conceptos ya que se utilizaran mas unos que otros**
+
 Referencias:
 
 * [Pagina oficial Love2d](https://love2d.org/wiki/Main_Page)
