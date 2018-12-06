@@ -4,6 +4,7 @@
 ![alt text](https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Lua-logo-nolabel.svg/192px-Lua-logo-nolabel.svg.png)
 
 Lua es un lenguaje de Scripting, interpretado y de tipado dinámico, creado por miembros del grupo de Tecnología en Computación Gráfica (Tecgraf) en la Pontificia Universidad Católica de Río de Janeiro .
+Es un lenguaje minimista, que se utiliza generalmente incrustado en un programa mas grande, generalmente en codigo C o C++
 
 ## Terminologias
 
@@ -243,7 +244,12 @@ El concepto de una tabla en Lua es un poco complejo de entender, las tablas vend
 	tabla[1]=2
 	
 	print(tabla[1]) -- devuelve 2
+
+	vector = {x=1,y=2,z=3}
+	print(vector.x) -- devuelve 1
+	print(vector["z"]) -- devuelve 3
 ```
+Se puede acceder a las variables dentro de un vector de 2 maneras, llamándolo como un atributo, o como un array, pero como si fuese una cadena, en ambos casos el resultado es el mismo
 
 Es posible generar programación orientada a objetos mediante las Tablas en Lua, ya que no se tiene soporte nativo para POO.
 
@@ -362,7 +368,25 @@ Existen 2 metodos utilizados
 **setmetatable (table, metatable)**
 **getmetatable (tabla)**
 
+Anteriormente se comento que es posible la creación de OOP mediante la utilización de metatablas en Lua.
 
+### Corutinas
+
+Son piezas de código que se generan de manera colaborativa, solo una puede ser utilizada a la vez.
+
+*** ***
+**No se ha profundizado totalmente en ciertos conceptos ya que se utilizaran mas unos que otros**
+
+### Librerias
+
+Lua cuenta con librerías para matemática ,  manejo de excepciones y lectura de ficheros i/o
+
+Ademas cuenta con muchas librerías de terceros en Internet.
+
+Fuentes:
+* [Tutorial_Lua_Ingles](https://www.tutorialspoint.com/lua/lua_metatables.htm)
+* [Tutorial_metatablas](http://lua.space/general/intro-to-metatables)
+* [Tutorial_corutinas](http://lua.space/gamedev/using-lua-coroutines-to-create-rpg)
 
 
 
