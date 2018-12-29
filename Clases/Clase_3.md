@@ -69,8 +69,30 @@ Y de igual manera con los objetos player y enemigo en la capa borrador.
 ![alt text](https://i.imgur.com/KR9K9vO.png)
 
 Ahora vamos a la opción **Editar Conjunto de Patrón**.
+
 ![alt text](https://i.imgur.com/XLR4TKS.png)
 
-Elegimos uno de los bloques que utilizamos en nuestro mapa, en este caso el muro, si deseamos hacer que el jugador no pueda atravesarlo cuando este en movimiento, le daremos un valor para identificarlo, en este caso sera el de **solido**, en la opción **Añadir atributo** seleccionamos y elegimos un valor booleano, con el nombre **Solido**
+Elegimos uno de los bloques que utilizamos en nuestro mapa, en este caso el muro, si deseamos hacer que el jugador no pueda atravesarlo cuando este en movimiento, le daremos un valor para identificarlo, en este caso sera el de **solido**, en la opción **Añadir atributo** seleccionamos y elegimos un valor booleano, con el nombre **Solido**, no olvidar darle check para que sea **true**
 
 ![alt text](https://i.imgur.com/6UxME81.png)
+
+Ahora, tenemos ciertas imágenes que solo necesitamos en ciertas partes los sólidos, por ejemplo las paredes de las casas, en este caso utilizamos la siguiente opción:
+
+![alt text](https://i.imgur.com/kkjtOId.png)
+
+Y le damos el atributo booleano de **Pared**
+
+![alt text](https://i.imgur.com/X00YWmu.png)
+
+Modificando un poco mas, quedaría así:
+
+![alt text](https://i.imgur.com/JK9ze0x.png)
+![alt text](https://i.imgur.com/sGo2ZQ3.png)
+![alt text](https://i.imgur.com/Q89O6ac.png)
+Y asi a cada valor que deseemos, al terminar, si queremos exportar nuestro mapa, solo basta con ir a la opcion:
+
+![alt text](https://i.imgur.com/pYkYCKp.png)
+
+Elegimos la opcion exportar como y luego elegimos la ruta, guardamos como archivo lua y ya tenemos hecho nuestro mapa.
+
+![alt text](https://i.imgur.com/h7i8KdC.png)
