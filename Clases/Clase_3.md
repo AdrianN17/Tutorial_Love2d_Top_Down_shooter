@@ -25,6 +25,7 @@ Si nos sobra o falta espacio es posible redimensionar el mapa, eso se vera mas a
 Ahora generamos un nuevo conjunto de patrones, esto es opcional, ya que es posible unirlo directamente al mapa, pero para poder reutilizar varias veces el mismo patrón es mejor crearlo fuera del mapa.
 
 ![alt text](https://i.imgur.com/brADaUg.png)
+
 Buscamos nuestro tileset y guardamos el archivo
 
 ![alt text](https://i.imgur.com/7Mbjw0e.png)
@@ -34,17 +35,21 @@ En mi caso, lo renombre a tile_datos, al guardar el archivo tsx estará anexado 
 ![alt text](https://i.imgur.com/KSfUSw5.png)
 
 Viendo nuestro mapa, nos parece muy grande y queremos redimensionarlo a 50x50 cuadriculas, para ello vamos a la opcion redimensionar mapa
+
 ![alt text](https://i.imgur.com/YRNzbfT.png)
 
 Y elegimos el tamaño que queremos
+
 ![alt text](https://i.imgur.com/gv4MDiP.png)
 
 Cuadramos los ejes X y Y, pero en este caso, al estar vacio el mapa no hay problema.
 Ahora si nos toca crear el mapa de nuestro juego, pero debemos antes de ordenar el mapa
 Para ello crearemos las siguientes capas
+
 ![alt text](https://i.imgur.com/gMPC9Y2.png)
 
 Generaremos un mapa a nuestra creatividad, podemos utilizar las siguientes herramientas:
+
 ![alt text](https://i.imgur.com/JOIQVci.png)
 
 1. **Brocha de estampar**: Asigna un tile a una cuadricula.
@@ -63,9 +68,11 @@ La capas se dividen en:
 * **Ocultar** : Aquí va los arboles y objetos en los cuales podremos ocultarnos.
 
 Ahora, a las imágenes que tengamos como caja (que están dentro de la capa Objetos), se le colocara el nombre caja
+
 ![alt text](https://i.imgur.com/8oTCw83.png)
 
 Y de igual manera con los objetos player y enemigo en la capa borrador.
+
 ![alt text](https://i.imgur.com/KR9K9vO.png)
 
 Ahora vamos a la opción **Editar Conjunto de Patrón**.
@@ -87,8 +94,11 @@ Y le damos el atributo booleano de **Pared**
 Modificando un poco mas, quedaría así:
 
 ![alt text](https://i.imgur.com/JK9ze0x.png)
+
 ![alt text](https://i.imgur.com/sGo2ZQ3.png)
+
 ![alt text](https://i.imgur.com/Q89O6ac.png)
+
 Y asi a cada valor que deseemos, al terminar, si queremos exportar nuestro mapa, solo basta con ir a la opcion:
 
 ![alt text](https://i.imgur.com/pYkYCKp.png)
