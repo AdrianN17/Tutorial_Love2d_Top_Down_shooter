@@ -44,6 +44,7 @@ Ahora con eso ya listo, y habiendo creado un archivo conf.lua y main.lua, genera
 
 ```lua
 --main.lua
+
 local Gamestate = require "libs.gamestate"
 local game= require "gamestate.game"
 
@@ -53,5 +54,15 @@ function love.load()
 	Gamestate.switch(game)
 end
 
+--conf.lua
+
+function love.conf(t)
+	t.version = "11.2" 
+  	t.author="AdrianN"
+  	t.window.width = 900
+  	t.window.height = 650
+  
+  	t.title="Juego de disparos"
+end
 ```
 
