@@ -8,10 +8,8 @@ En este taller mediante la utilización del lenguaje Lua se planea la creación 
 * [Introducción al framework Love2d](https://github.com/AdrianN17/Tutorial_Love2d_Top_Down_shooter/blob/master/Clases/Clase_2.md)
 
 * [Introducción a Tilemap](https://github.com/AdrianN17/Tutorial_Love2d_Top_Down_shooter/blob/master/Clases/Clase_3.md)
-)
 
 * [Generar entorno de videojuego](https://github.com/AdrianN17/Tutorial_Love2d_Top_Down_shooter/blob/master/Clases/Clase_4.md)
-)
 
 * [Creación y animación de personaje](https://pages.github.com/)
 
