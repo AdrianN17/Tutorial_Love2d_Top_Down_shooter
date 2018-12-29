@@ -7,9 +7,9 @@ Tilemap es una herramienta open source para generar niveles en mosaicos o tiles 
 ## Tipo de Capas:
 
 En Tilemap existen 3 tipos de capas en la cual nosotros podemos diseñar nuestros niveles:
- * Capa de Patrones : Se guarda los tiles o mosaicos a utilizar en el nivel
- * Capa de Objetos: Objetos o imágenes guardadas dentro del nivel
- * Capa de Imágenes: Imágenes guardadas dentro del nivel, es similar a la capa de objetos
+ * **Capa de Patrones** : Se guarda los tiles o mosaicos a utilizar en el nivel
+ * **Capa de Objetos**: Objetos o imágenes guardadas dentro del nivel
+ * **Capa de Imágenes**: Imágenes guardadas dentro del nivel, es similar a la capa de objetos
 
 ## Iniciando
 
@@ -47,23 +47,30 @@ Para ello crearemos las siguientes capas
 Generaremos un mapa a nuestra creatividad, podemos utilizar las siguientes herramientas:
 ![alt text](https://i.imgur.com/JOIQVci.png)
 
-1. Brocha de estampar: Asigna un tile a una cuadricula.
-2. Herramienta de rellenado: Asigna un mismo tile a varias cuadriculas.
-3. Herramienta de rellenado de formas: Asigna un mismo tile a varias cuadriculas, solo que esta opción, tu puedes elegir el tamaño.
-4. Goma: Borra un tile de una cuadricula.
-5. Seleccion Rectangular: Sirve para seleccionar una cantidad de cuadriculas, para poder copiar, pegar y cortar.
-6. Varita magica: Selecciona una cantidad de tiles iguales, de manera automática.
+1. **Brocha de estampar**: Asigna un tile a una cuadricula.
+2. **Herramienta de rellenado**: Asigna un mismo tile a varias cuadriculas.
+3. **Herramienta de rellenado de formas**: Asigna un mismo tile a varias cuadriculas, solo que esta opción, tu puedes elegir el tamaño.
+4. **Goma**: Borra un tile de una cuadricula.
+5. **Seleccion** Rectangular: Sirve para seleccionar una cantidad de cuadriculas, para poder copiar, pegar y cortar.
+6. **Varita magica**: Selecciona una cantidad de tiles iguales, de manera automática.
 
 La capas se dividen en:
-* Suelo: Aquí irán todos los tiles iniciales (el suelo, pasto, etc)
-* Superficie: Aquí se colocara todo lo que deba estar encima del suelo (paredes, piedras, etc)
-* Borrador: Aquí ira lo que necesitemos solo al inicio, esta capa sera borrada al inicializar el juego.
-* Objetos: Guarda los accesorios de nuestro juego (plantas, mesas, etc), y objetos con los cuales podremos interactuar (cajas).
-* Personajes: Aquí se coloca los jugadores, balas y enemigos.
-* Ocultar : Aquí va los arboles y objetos en los cuales podremos ocultarnos.
+* **Suelo**: Aquí irán todos los tiles iniciales (el suelo, pasto, etc)
+* **Superficie**: Aquí se colocara todo lo que deba estar encima del suelo (paredes, piedras, etc)
+* **Borrador**: Aquí ira lo que necesitemos solo al inicio, esta capa sera borrada al inicializar el juego.
+* **Objetos**: Guarda los accesorios de nuestro juego (plantas, mesas, etc), y objetos con los cuales podremos interactuar (cajas).
+* **Personajes**: Aquí se coloca los jugadores, balas y enemigos.
+* **Ocultar** : Aquí va los arboles y objetos en los cuales podremos ocultarnos.
 
 Ahora, a las imágenes que tengamos como caja (que están dentro de la capa Objetos), se le colocara el nombre caja
 ![alt text](https://i.imgur.com/8oTCw83.png)
 
 Y de igual manera con los objetos player y enemigo en la capa borrador.
 ![alt text](https://i.imgur.com/KR9K9vO.png)
+
+Ahora vamos a la opción **Editar Conjunto de Patrón**.
+![alt text](https://i.imgur.com/XLR4TKS.png)
+
+Elegimos uno de los bloques que utilizamos en nuestro mapa, en este caso el muro, si deseamos hacer que el jugador no pueda atravesarlo cuando este en movimiento, le daremos un valor para identificarlo, en este caso sera el de **solido**, en la opción **Añadir atributo** seleccionamos y elegimos un valor booleano, con el nombre **Solido**
+
+![alt text](https://i.imgur.com/6UxME81.png)
