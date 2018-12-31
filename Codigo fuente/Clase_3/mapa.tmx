@@ -110,14 +110,14 @@
 </data>
  </layer>
  <objectgroup id="7" name="Borrador">
-  <object id="371" name="Player" x="282" y="227.667" width="100" height="100"/>
-  <object id="372" name="Enemigo" x="1258" y="949" width="100" height="100"/>
-  <object id="373" name="Enemigo" x="1362" y="2203" width="100" height="100"/>
-  <object id="374" name="Enemigo" x="480" y="2397" width="100" height="100"/>
-  <object id="375" name="Enemigo" x="2194" y="2869" width="100" height="100"/>
-  <object id="376" name="Enemigo" x="1904" y="215" width="100" height="100"/>
-  <object id="377" name="Enemigo" x="2674" y="1191" width="100" height="100"/>
-  <object id="378" name="Enemigo" x="752" y="1503" width="100" height="100"/>
+  <object id="371" name="Player" x="282" y="227.667" width="35" height="43"/>
+  <object id="372" name="Enemigo" x="1258" y="949" width="35" height="43"/>
+  <object id="373" name="Enemigo" x="1362" y="2203" width="35" height="43"/>
+  <object id="374" name="Enemigo" x="480" y="2397" width="35" height="43"/>
+  <object id="375" name="Enemigo" x="2194" y="2869" width="35" height="43"/>
+  <object id="376" name="Enemigo" x="1904" y="215" width="35" height="43"/>
+  <object id="377" name="Enemigo" x="2674" y="1191" width="35" height="43"/>
+  <object id="378" name="Enemigo" x="752" y="1503" width="35" height="43"/>
  </objectgroup>
  <objectgroup id="8" name="Objetos">
   <object id="26" gid="235" x="1120.5" y="1076" width="64" height="64"/>
