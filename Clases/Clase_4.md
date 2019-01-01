@@ -120,7 +120,7 @@ local Class = require 'libs.class'
 
 local entidad = Class{}
 
-function entidad:init(x,y)
+function entidad:init(x,y,w,h)
 
 end
 
