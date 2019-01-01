@@ -119,7 +119,7 @@ local Class = require 'libs.class'
 
 local entidad = Class{}
 
-function entidad:init(x,y)
+function entidad:init(x,y,w,h)
 
 end
 
@@ -409,12 +409,13 @@ function game:mousepressed(x,y,button)
 end
 
 function game:keypressed(key)
-
+	base.entidades:keypressed(key)
 end
 
 function game:keyreleased(key)
-
+	base.entidades:keyreleased(key)
 end
+
 
 function game:tiles(pos)
 
