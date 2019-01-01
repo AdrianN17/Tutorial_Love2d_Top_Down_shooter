@@ -1,8 +1,9 @@
-local HC = "libs.HC"
+
 
 local entidades = {
 	map=nil,
 	cam=nil,
+	collider=nil,
 	player=nil,
 	enemigos={},
 	solidos={},
@@ -11,9 +12,10 @@ local entidades = {
 	balas={{},{}}
 }
 
-function entidades:enter(map,cam)
+function entidades:enter(map,cam,collider)
 	self.map=map
 	self.cam=cam
+	self.collider=collider
 end
 
 function entidades:actor(actor)
@@ -92,13 +94,17 @@ function entidades:clear()
 	self.balas={{},{}}
 end
 
+function entidades:position()
+	return self.player.ox,self.player.oy
+end
+
 -- para actualizar mapa
 function entidades:player_draw()
-
+	self.player:draw()
 end
 
 function entidades:player_update(dt)
-
+	self.player:update(dt)
 end
 
 function entidades:enemigos_draw()
@@ -123,6 +129,12 @@ end
 
 function entidades:balas_update(dt)
 
+end
+
+function entidades:getmouseposition()
+
+	local x,y=self.cam:toWorld(love.mouse.getX( ),love.mouse.getY( ))
+	return x,y
 end
 
 --colisiones

@@ -1,4 +1,3 @@
-local HC = "libs.HC"
 
 local entidades = {
 	map=nil,

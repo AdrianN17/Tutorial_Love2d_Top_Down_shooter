@@ -1,10 +1,13 @@
 local Gamestate = require "libs.gamestate"
 local base = require "gamestate.base"
 local Class = require "libs.class"
-local HC = require "libs.HC"
 local sprites = require "assets.img.sprites"
 
 spritesheet= sprites
+local camview={x=0,y=0,w=0,h=0}
+
+local Player = require "entidades.player"
+
 
 
 local game = Class{
@@ -26,6 +29,8 @@ function game:enter()
 	self:tiles(2)
 
 	self:object()
+
+	self.map:removeLayer("Borrador")
 end
 
 function game:update(dt)
@@ -35,19 +40,22 @@ function game:update(dt)
 end
 
 function game:draw()
-	self.map:draw(-0,-0,self.scale,self.scale)
+	camview.x,camview.y,camview.w,camview.h=self.cam:getVisible()
+	self.map:draw(-camview.x,-camview.y,self.scale,self.scale)
+	self.cam:setPosition(base.entidades:position())
 end
 
 function game:mousepressed(x,y,button)
-
+	local cx,cy=self.cam:toWorld(x,y)
+	base.entidades:mousepressed(cx,cy,button)
 end
 
 function game:keypressed(key)
-
+	base.entidades:keypressed(key)
 end
 
 function game:keyreleased(key)
-
+	base.entidades:keyreleased(key)
 end
 
 function game:tiles(pos)
@@ -60,7 +68,7 @@ function game:tiles(pos)
 			local tile = self.map.layers[pos].data[y][x]
 			if tile then
 				if tile.properties.Solido then
-					be:add({body=HC.rectangle((x-1)*self.map.tilewidth,(y-1)*self.map.tileheight,self.map.tilewidth,self.map.tileheight)},"solidos")
+					be:add({body=self.collider:rectangle((x-1)*self.map.tilewidth,(y-1)*self.map.tileheight,self.map.tilewidth,self.map.tileheight)},"solidos")
 				elseif tile.properties.Pared and tile.properties.Circular then
 					local tx,ty=(x-1)*self.map.tilewidth,(y-1)*self.map.tileheight
 
@@ -72,11 +80,11 @@ function game:tiles(pos)
 
 					local r=math.pow(w*h,1/2)/2
 
-					be:add({body=HC.circle(tx+x+r,ty+y+r,r)},"solidos")
+					be:add({body=self.collider:circle(tx+x+r,ty+y+r,r)},"solidos")
 
 				elseif tile.properties.Pared and not tile.properties.Circular then
 
-					be:add({body=HC.rectangle((x-1)*self.map.tilewidth,(y-1)*self.map.tileheight,self.map.tilewidth,self.map.tileheight)},"solidos")
+					be:add({body=self.collider:rectangle((x-1)*self.map.tilewidth,(y-1)*self.map.tileheight,self.map.tilewidth,self.map.tileheight)},"solidos")
 
 				elseif tile.properties.Destruible then
 
@@ -88,7 +96,7 @@ function game:tiles(pos)
 						x,y,w,h=obj.x,obj.y,obj.width,obj.height
 					end
 
-					be:add({body=HC.rectangle(tx+x,ty+y,w,h)},"destruible")
+					be:add({body=self.collider:rectangle(tx+x,ty+y,w,h)},"destruible")
 				end
 			end
 		end
@@ -101,7 +109,7 @@ function game:object()
 
 	for i, object in pairs(self.map.objects) do
 		if object.name == "Player" then
-			
+			be:actor(Player(object.x,object.y,object.width,object.height))
 		elseif object.name == "Caja" then
 
 		elseif object.name == "Enemigo" then

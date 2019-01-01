@@ -1,7 +1,7 @@
 local Gamestate = require "libs.gamestate"
 local base = require "gamestate.base"
 local Class = require "libs.class"
-local HC = require "libs.HC"
+
 
 local game = Class{
 	__includes = base
@@ -57,7 +57,7 @@ function game:tiles(pos)
 			local tile = self.map.layers[pos].data[y][x]
 			if tile then
 				if tile.properties.Solido then
-					be:add({body=HC.rectangle((x-1)*self.map.tilewidth,(y-1)*self.map.tileheight,self.map.tilewidth,self.map.tileheight)},"solidos")
+					be:add({body=self.collider:rectangle((x-1)*self.map.tilewidth,(y-1)*self.map.tileheight,self.map.tilewidth,self.map.tileheight)},"solidos")
 				elseif tile.properties.Pared and tile.properties.Circular then
 					local tx,ty=(x-1)*self.map.tilewidth,(y-1)*self.map.tileheight
 
@@ -69,11 +69,11 @@ function game:tiles(pos)
 
 					local r=math.pow(w*h,1/2)/2
 
-					be:add({body=HC.circle(tx+x+r,ty+y+r,r)},"solidos")
+					be:add({body=self.collider:circle(tx+x+r,ty+y+r,r)},"solidos")
 
 				elseif tile.properties.Pared and not tile.properties.Circular then
 
-					be:add({body=HC.rectangle((x-1)*self.map.tilewidth,(y-1)*self.map.tileheight,self.map.tilewidth,self.map.tileheight)},"solidos")
+					be:add({body=self.collider:rectangle((x-1)*self.map.tilewidth,(y-1)*self.map.tileheight,self.map.tilewidth,self.map.tileheight)},"solidos")
 
 				elseif tile.properties.Destruible then
 
@@ -85,7 +85,7 @@ function game:tiles(pos)
 						x,y,w,h=obj.x,obj.y,obj.width,obj.height
 					end
 
-					be:add({body=HC.rectangle(tx+x,ty+y,w,h)},"destruible")
+					be:add({body=self.collider:rectangle(tx+x,ty+y,w,h)},"destruible")
 				end
 			end
 		end

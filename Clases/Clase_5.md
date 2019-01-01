@@ -80,15 +80,13 @@ En nuestro archivo player.lua, debemos implementar el siguiente código.
 local Class = require "libs.class"
 local base = require "gamestate.base"
 local entidad = require "entidades.entidad"
-local HC = require "libs.HC"
-local Timer = require "libs.timer"
 local vector = require "libs.vector"
 
 local player = Class{
 	__includes = entidad
 }
 
-function player:init()
+function player:init(x,y,w,h)
 
 end
 
@@ -115,3 +113,182 @@ end
 return player
 ```
 
+Lo que hacemos es crear las bases de nuestro objeto, llamando como molde nuestro archivo entidad.lua.
+
+Ahora, lo que hacemos es recibir los datos de inicializacion para nuestro objeto player.
+
+```lua
+--player.lua
+function player:init(x,y,w,h)
+	self.body=HC.rectangle(x,y,w,h)
+	self.w,self.h=w,h
+	self.ox,self.oy=self.body:center()
+
+	self.radio=0
+	self.velocidad=500
+	self.hp=10
+	
+	self.estado={ correr = false, inmunidad = false, vida = true}
+
+	self.direccion={a = false, s = false, d = false, w = false}
+
+	self.spritesheet=spritesheet
+
+	self.posicion=1
+end
+
+function player:draw()
+	love.graphics.draw(self.spritesheet.img,self.spritesheet.player[self.posicion],self.ox,self.oy,self.radio,1,1,self.w/2,self.h/2)
+end
+```
+
+Editamos nuestra función de dibujado y actualizacion en entidades.lua
+
+```lua
+--entidades.lua
+function entidades:player_draw()
+	self.player:draw()
+end
+
+function entidades:player_update(dt)
+	self.player:update(dt)
+end
+```
+Implementamos finalmente en el archivo game.lua nuestro objeto
+
+```lua
+--game.lua
+local Player = require "entidades.player"
+
+....
+
+function game:object()
+	local be=base.entidades
+
+	for i, object in pairs(self.map.objects) do
+		if object.name == "Player" then
+			be:actor(Player(object.x,object.y,object.width,object.height))
+		elseif object.name == "Caja" then
+
+		elseif object.name == "Enemigo" then
+			
+		end
+	end
+end
+```
+
+Implementamos un vector de movimiento para que nuestro jugador se mueva.
+```lua
+--player.lua
+function player:update(dt)
+	local delta = vector(0,0)
+
+
+	if self.direccion.a then
+		delta.x=-1
+	elseif self.direccion.d then
+		delta.x=1
+	end
+
+	if self.direccion.w then
+		delta.y=-1
+	elseif self.direccion.s then
+		delta.y=1
+	end
+
+	delta:normalizeInplace()
+
+	delta=delta+ delta * self.velocidad *dt
+
+	
+    self.body:move(delta:unpack())
+
+	self.ox,self.oy=self.body:center()
+end
+
+function player:mousepressed(x,y,button)
+
+end
+
+function player:keypressed(key)
+	if key=="a" then
+		self.direccion.a=true
+	elseif key=="d" then
+		self.direccion.d=true
+	end
+
+	if key=="w" then
+		self.direccion.w=true
+	elseif key=="s" then
+		self.direccion.s=true
+	end
+end
+
+function player:keyreleased(key)
+	if key=="a" then
+		self.direccion.a=false
+	elseif key=="d" then
+		self.direccion.d=false
+	end
+
+	if key=="w" then
+		self.direccion.w=false
+	elseif key=="s" then
+		self.direccion.s=false
+	end
+end
+```
+Lo que resultaría, algo asi:
+
+![alt text](https://i.imgur.com/AeX9M77.png)
+
+Para ocultar ese rectángulo blanco, eliminaremos la capa borrador de nuestro mapa.
+Solo bastaría ingresar el siguiente código en nuestro archivo game.lua:
+
+```lua
+--game.lua
+function game:enter()
+
+	...
+	
+	self.map:removeLayer("Borrador")
+end
+```
+Ahora, nos faltaría darle movimiento con el mouse y hacer que nuestro jugador sea seguido por la cámara, para ello debemos integrar la camara con nuestro player.
+
+```lua
+--entidades.lua
+...
+
+function entidades:position()
+	return self.player.ox,self.player.oy
+end
+
+...
+```
+
+Y en nuestro archivo game.lua
+
+```lua
+spritesheet= sprites
+local camview={x=0,y=0,w=0,h=0}
+
+...
+
+local Player = require "entidades.player"
+function game:draw()
+	camview.x,camview.y,camview.w,camview.h=self.cam:getVisible()
+	self.map:draw(-camview.x,-camview.y,self.scale,self.scale)
+	self.cam:setPosition(base.entidades:position())
+end
+
+...
+
+function game:mousepressed(x,y,button)
+	local cx,cy=self.cam:toWorld(x,y)
+	base.entidades:mousepressed(cx,cy,button)
+end
+```
+![alt text](https://i.imgur.com/VOQeGWi.png)
+
+Ahora nuestro personaje se puede mover a libertad, pero el problema es que no gira a donde nuestro mouse apunta. Para ello recogeremos los valores de nuestro mouse y le daremos un angulo.

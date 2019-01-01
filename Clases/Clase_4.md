@@ -73,7 +73,6 @@ Hasta este momento, si ejecutamos nuestro juego nos dará un error, ya que **gam
 -- game.lua
 local Gamestate = require "libs.gamestate"
 local Class = require "libs.class"
-local HC = require "libs.HC"
 
 local game = Class{}
 
@@ -137,7 +136,6 @@ return entidad
 Esta clase es como un molde para nuestros objetos.
 
 ```lua
-local HC = "libs.HC"
 
 local entidades = {
 	map=nil,
@@ -299,17 +297,19 @@ local Class = require "libs.class"
 local entidades = require "entidades.entidades"
 local sti= require "libs.sti"
 local gamera = require "libs.gamera"
+local HC = require "libs.HC"
+local Timer = require "libs.timer"
 
 local base = Class{
 	__includes = Gamestate,
 	init = function(self, mapfile)
 	self.map=sti(mapfile)
-	self.gamera=gamera
 	self.scale=0.7
 	self.cam=self.gamera.new(0,0,self.map.width*self.map.tilewidth, self.map.height*self.map.tileheight)
 	self.cam:setScale(self.scale)
 	self.map:resize(love.graphics.getWidth()*2,love.graphics.getHeight()*2)
-	entidades:enter(self.map,self.gamera)
+	self.collider = HC.new()
+	entidades:enter(self.map,self.cam,self.collider)
 	end;
 	entidades = entidades;
 	gamera = gamera;
@@ -325,7 +325,6 @@ Ahora vamos a integrar nuestro archivo base.lua con game.lua
 local Gamestate = require "libs.gamestate"
 local base = require "gamestate.base"
 local Class = require "libs.class"
-local HC = require "libs.HC"
 
 local game = Class{
 	__includes = base
@@ -372,7 +371,6 @@ Todo lo que nos faltaría es ingresar los datos en nuestras tablas.
 local Gamestate = require "libs.gamestate"
 local base = require "gamestate.base"
 local Class = require "libs.class"
-local HC = require "libs.HC"
 
 local game = Class{
 	__includes = base
@@ -428,7 +426,7 @@ function game:tiles(pos)
 			local tile = self.map.layers[pos].data[y][x]
 			if tile then
 				if tile.properties.Solido then
-					be:add({body=HC.rectangle((x-1)*self.map.tilewidth,(y-1)*self.map.tileheight,self.map.tilewidth,self.map.tileheight)},"solidos")
+					be:add({body=self.collider:rectangle((x-1)*self.map.tilewidth,(y-1)*self.map.tileheight,self.map.tilewidth,self.map.tileheight)},"solidos")
 				elseif tile.properties.Pared and tile.properties.Circular then
 					local tx,ty=(x-1)*self.map.tilewidth,(y-1)*self.map.tileheight
 
@@ -440,11 +438,11 @@ function game:tiles(pos)
 
 					local r=math.pow(w*h,1/2)/2
 
-					be:add({body=HC.circle(tx+x+r,ty+y+r,r)},"solidos")
+					be:add({body=self.collider:circle(tx+x+r,ty+y+r,r)},"solidos")
 
 				elseif tile.properties.Pared and not tile.properties.Circular then
 
-					be:add({body=HC.rectangle((x-1)*self.map.tilewidth,(y-1)*self.map.tileheight,self.map.tilewidth,self.map.tileheight)},"solidos")
+					be:add({body=self.collider:rectangle((x-1)*self.map.tilewidth,(y-1)*self.map.tileheight,self.map.tilewidth,self.map.tileheight)},"solidos")
 
 				elseif tile.properties.Destruible then
 
@@ -456,7 +454,7 @@ function game:tiles(pos)
 						x,y,w,h=obj.x,obj.y,obj.width,obj.height
 					end
 
-					be:add({body=HC.rectangle(tx+x,ty+y,w,h)},"destruible")
+					be:add({body=self.collider:rectangle(tx+x,ty+y,w,h)},"destruible")
 				end
 			end
 		end
