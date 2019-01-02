@@ -37,6 +37,8 @@ function game:update(dt)
 	self.map:update(dt)
 
 	base.entidades:collisions()
+
+
 end
 
 function game:draw()
@@ -48,6 +50,11 @@ end
 function game:mousepressed(x,y,button)
 	local cx,cy=self.cam:toWorld(x,y)
 	base.entidades:mousepressed(cx,cy,button)
+end
+
+function game:mousereleased(x,y,button)
+	local cx,cy=self.cam:toWorld(x,y)
+	base.entidades:mousereleased(cx,cy,button)
 end
 
 function game:keypressed(key)
@@ -96,7 +103,7 @@ function game:tiles(pos)
 						x,y,w,h=obj.x,obj.y,obj.width,obj.height
 					end
 
-					be:add({body=self.collider:rectangle(tx+x,ty+y,w,h)},"destruible")
+					be:add({body=self.collider:rectangle(tx+x,ty+y,w,h),hp=5},"destruible")
 				end
 			end
 		end
@@ -111,7 +118,7 @@ function game:object()
 		if object.name == "Player" then
 			be:actor(Player(object.x,object.y,object.width,object.height))
 		elseif object.name == "Caja" then
-
+			be:add({body=self.collider:rectangle(object.x,object.y,object.width,-object.height),hp=5},"destruible")
 		elseif object.name == "Enemigo" then
 			
 		end
@@ -120,7 +127,6 @@ end
 
 function game:layers()
 	local layer_personajes = self.map.layers["Personajes"]
-	local layer_objetos = self.map.layers["Objetos"]
 
 	be=base.entidades
 
@@ -128,22 +134,17 @@ function game:layers()
 		be:balas_draw()
 		be:enemigos_draw()
 		be:player_draw()
+
+		be:objetos_draw()
 	end
 
 	function layer_personajes:update(dt)
 		be:balas_update(dt)
 		be:enemigos_update(dt)
 		be:player_update(dt)
-	end
 
-	function layer_objetos:draw()
-		be:objetos_draw()
-	end
-
-	function layer_objetos:update(dt)
 		be:objetos_update(dt)
 	end
-
 end
 
 return game

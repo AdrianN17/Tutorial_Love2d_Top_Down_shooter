@@ -274,7 +274,7 @@
   <object id="300" name="Caja" gid="129" x="2906" y="1622" width="64" height="64"/>
   <object id="301" name="Caja" gid="129" x="2990" y="1506" width="64" height="64"/>
   <object id="302" name="Caja" gid="129" x="3001" y="1590" width="64" height="64"/>
-  <object id="303" gid="129" x="848" y="1716" width="64" height="64"/>
+  <object id="303" name="Caja" gid="129" x="848" y="1716" width="64" height="64"/>
   <object id="304" name="Caja" gid="129" x="728" y="2440" width="64" height="64"/>
   <object id="305" name="Caja" gid="129" x="709" y="2958" width="64" height="64"/>
   <object id="306" name="Caja" gid="129" x="894" y="2823" width="64" height="64"/>
@@ -282,9 +282,9 @@
   <object id="308" name="Caja" gid="129" x="332" y="1718" width="64" height="64"/>
   <object id="309" name="Caja" gid="129" x="224" y="1848" width="64" height="64"/>
   <object id="310" name="Caja" gid="129" x="404" y="1846" width="64" height="64"/>
-  <object id="311" gid="129" x="884" y="508" width="64" height="64"/>
-  <object id="312" gid="129" x="926" y="356" width="64" height="64"/>
-  <object id="313" gid="129" x="792" y="418" width="64" height="64"/>
+  <object id="311" name="Caja" gid="129" x="884" y="508" width="64" height="64"/>
+  <object id="312" name="Caja" gid="129" x="926" y="356" width="64" height="64"/>
+  <object id="313" name="Caja" gid="129" x="792" y="418" width="64" height="64"/>
   <object id="314" name="Caja" gid="129" x="1172" y="2244" width="64" height="64"/>
   <object id="315" name="Caja" gid="129" x="1124" y="2342" width="64" height="64"/>
   <object id="316" name="Caja" gid="129" x="1184" y="2378" width="64" height="64"/>

@@ -2695,7 +2695,7 @@ return {
         },
         {
           id = 303,
-          name = "",
+          name = "Caja",
           type = "",
           shape = "rectangle",
           x = 848,
@@ -2807,7 +2807,7 @@ return {
         },
         {
           id = 311,
-          name = "",
+          name = "Caja",
           type = "",
           shape = "rectangle",
           x = 884,
@@ -2821,7 +2821,7 @@ return {
         },
         {
           id = 312,
-          name = "",
+          name = "Caja",
           type = "",
           shape = "rectangle",
           x = 926,
@@ -2835,7 +2835,7 @@ return {
         },
         {
           id = 313,
-          name = "",
+          name = "Caja",
           type = "",
           shape = "rectangle",
           x = 792,

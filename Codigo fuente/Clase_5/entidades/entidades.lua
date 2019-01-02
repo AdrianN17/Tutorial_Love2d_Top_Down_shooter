@@ -6,16 +6,20 @@ local entidades = {
 	collider=nil,
 	player=nil,
 	enemigos={},
+	timer_player=nil,
+	timer_enemigo=nil,
 	solidos={},
 	destruible={},
 	objetos={},
 	balas={{},{}}
 }
 
-function entidades:enter(map,cam,collider)
+function entidades:enter(map,cam,collider,timer_player,timer_enemigo)
 	self.map=map
 	self.cam=cam
 	self.collider=collider
+	self.timer_player=timer_player
+	self.timer_enemigo=timer_enemigo
 end
 
 function entidades:actor(actor)
@@ -105,6 +109,8 @@ end
 
 function entidades:player_update(dt)
 	self.player:update(dt)
+
+	self.timer_player:update(dt)
 end
 
 function entidades:enemigos_draw()
@@ -132,15 +138,29 @@ function entidades:balas_update(dt)
 end
 
 function entidades:getmouseposition()
-
-	local x,y=self.cam:toWorld(love.mouse.getX( ),love.mouse.getY( ))
-	return x,y
+	return self.cam:toWorld(love.mouse.getX( ),love.mouse.getY( ))	
 end
 
 --colisiones
 
 function entidades:collisions()
+	for _,solido in ipairs(self.solidos) do
+		local dx,dy,collision=0,0,false
+		collision,dx,dy= self.player.body:collidesWith(solido.body) 
 
+		if collision then
+			self.player.body:move(dx,dy)
+		end
+	end
+
+	for _,destruible in ipairs(self.destruible) do
+		local dx,dy,collision=0,0,false
+		collision,dx,dy= self.player.body:collidesWith(destruible.body) 
+
+		if collision then
+			self.player.body:move(dx,dy)
+		end
+	end
 end
 
 function entidades:keypressed(key)
@@ -157,6 +177,28 @@ end
 
 function entidades:mousereleased(x, y, button)
 	self.player:mousereleased(x, y, button)
+end
+
+function entidades:replace_tile(layer, tilex, tiley, newTileGid)
+	local x=(tilex/self.map.tilewidth)+1
+	local y=(tiley/self.map.tileheight)+1
+
+	layer = self.map.layers[layer]
+	for i, instance in ipairs(self.map.tileInstances[layer.data[y][x].gid]) do
+		if instance.layer == layer and instance.x == tilex and instance.y == tiley then
+		  instance.batch:set(instance.id, self.map.tiles[newTileGid].quad, instance.x, instance.y)
+		  break
+		end
+	end
+end
+
+function entidades:replace_object(object,gid_tile)
+	for i, instance in ipairs(self.map.tileInstances[object.gid]) do
+  		if object.x == instance.x and object.y  == instance.y then
+      		instance.batch:set(instance.id, self.map.tiles[gid_tile].quad, object.x,object.y)
+      		break
+      	end
+  	end
 end
 
 return entidades

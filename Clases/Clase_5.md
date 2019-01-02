@@ -80,6 +80,8 @@ En nuestro archivo player.lua, debemos implementar el siguiente código.
 local Class = require "libs.class"
 local base = require "gamestate.base"
 local entidad = require "entidades.entidad"
+local HC = require "libs.HC"
+local Timer = require "libs.timer"
 local vector = require "libs.vector"
 
 local player = Class{
@@ -99,6 +101,10 @@ function player:update(dt)
 end
 
 function player:mousepressed(x,y,button)
+
+end
+
+function player:mousereleased(x,y,button)
 
 end
 
@@ -288,7 +294,327 @@ function game:mousepressed(x,y,button)
 	local cx,cy=self.cam:toWorld(x,y)
 	base.entidades:mousepressed(cx,cy,button)
 end
+
+function game:mousereleased(x,y,button)
+	local cx,cy=self.cam:toWorld(x,y)
+	base.entidades:mousereleased(cx,cy,button)
+end
 ```
 ![alt text](https://i.imgur.com/VOQeGWi.png)
 
 Ahora nuestro personaje se puede mover a libertad, pero el problema es que no gira a donde nuestro mouse apunta. Para ello recogeremos los valores de nuestro mouse y le daremos un angulo.
+
+
+Lo que haremos es aumentar una funcion en entidades.lua y en player.lua, para generar nuestro angulo.
+
+```lua
+--entidades.lua
+function entidades:getmouseposition()
+	return self.cam:toWorld(love.mouse.getX( ),love.mouse.getY( ))	
+end
+```
+
+```lua
+--player.lua
+function player:update(dt)
+
+	...
+	
+	self.ox,self.oy=self.body:center()
+
+	self.radio=self:angle()
+end
+function player:angle()
+	local angulo=0
+	local mx,my=base.entidades:getmouseposition()
+	angulo=math.atan2(my-self.oy,mx-self.ox)
+	return angulo
+end
+```
+
+Y ya tenemos el giro de nuestro jugador:
+
+![alt text](https://i.imgur.com/dzOnvRA.png)
+
+Esto nos ayudará mas adelante con la dirección de las balas y entre otras cosas más.
+
+Pero, nos damos cuenta que nuestro jugador no esta detectando correctamente las colisiones, es capaz de atravesar las paredes como si nada, en este caso, nos toca realizar las colisiones, y para ello nos dirigimos a nuestra funcion collisions de nuestro archivo entidades.lua.
+
+Agregamos el siguiente codigo:
+```lua
+--entidades.lua
+function entidades:collisions()
+	for _,solido in ipairs(self.solidos) do
+		local dx,dy,collision=0,0,false
+		collision,dx,dy= self.player.body:collidesWith(solido.body) 
+
+		if collision then
+			self.player.body:move(dx,dy)
+		end
+	end
+
+	for _,destruible in ipairs(self.destruible) do
+		local dx,dy,collision=0,0,false
+		collision,dx,dy= self.player.body:collidesWith(destruible.body) 
+
+		if collision then
+			self.player.body:move(dx,dy)
+		end
+	end
+end
+```
+
+Ahora al intentar atravesar una pared, nos es imposible realizar dicha acción, y nos regresa a donde estábamos antes.
+
+Lo único que nos faltaría, seria que nuestro personaje cambie de arma, dispare y corra al presionar un botón.
+
+Pero antes... recordamos que teníamos unas cajas en nuestro mapa, pero no están en ningún lado.
+Para poder visualizarlos, debemos editar nuestro game.lua
+
+En la función layer, editamos nuestro código.
+```lua
+--game.lua
+function game:layers()
+	local layer_personajes = self.map.layers["Personajes"]
+
+	be=base.entidades
+
+	function layer_personajes:draw()
+		be:balas_draw()
+		be:enemigos_draw()
+		be:player_draw()
+
+		be:objetos_draw()
+	end
+
+	function layer_personajes:update(dt)
+		be:balas_update(dt)
+		be:enemigos_update(dt)
+		be:player_update(dt)
+
+		be:objetos_update(dt)
+	end
+end
+```
+
+Ademas de agregar la siguiente función en nuestro entidades.lua :
+
+```lua
+--entidades.lua
+
+function entidades:replace_tile(layer, tilex, tiley, newTileGid)
+	local x=(tilex/self.map.tilewidth)+1
+	local y=(tiley/self.map.tileheight)+1
+
+	layer = self.map.layers[layer]
+	for i, instance in ipairs(self.map.tileInstances[layer.data[y][x].gid]) do
+		if instance.layer == layer and instance.x == tilex and instance.y == tiley then
+		  instance.batch:set(instance.id, self.map.tiles[newTileGid].quad, instance.x, instance.y)
+		  break
+		end
+	end
+end
+
+function entidades:replace_object(object,gid_tile)
+	for i, instance in ipairs(self.map.tileInstances[object.gid]) do
+  		if object.x == instance.x and object.y  == instance.y then
+      		instance.batch:set(instance.id, self.map.tiles[gid_tile].quad, object.x,object.y)
+      		break
+      	end
+  	end
+end
+```
+
+Nos servirá luego, para modificar nuestro mapa.
+
+Agregamos las colisiones de nuestras cajas en game.lua
+
+```lua
+--game.lua
+function game:object()
+	local be=base.entidades
+
+	for i, object in pairs(self.map.objects) do
+		if object.name == "Player" then
+			be:actor(Player(object.x,object.y,object.width,object.height))
+		elseif object.name == "Caja" then
+			be:add({body=self.collider:rectangle(object.x,object.y,object.width,-object.height),hp=5},"destruible")
+		elseif object.name == "Enemigo" then
+			
+		end
+	end
+end
+```
+
+El resultado sera el siguiente:
+![alt text](https://i.imgur.com/SYNtxgv.png)
+
+Volviendo a nuestro jugador, lo que necesitamos ahora es darle animación, por lo tanto, en nuestro file jugador.lua agregaremos las siguientes variables y tablas:
+```lua
+--player.lua
+function player:init(x,y,w,h)
+	self.body=base.entidades.collider:rectangle(x,y,w,h)
+	self.w,self.h=w,h
+	self.ox,self.oy=self.body:center()
+
+	self.radio=0
+	self.velocidad=500
+	self.hp=10
+
+	self.estado={ correr = false, inmunidad = false, vida = true, disparo=false}
+
+	self.direccion={a = false, s = false, d = false, w = false}
+
+	self.spritesheet=spritesheet
+
+	self.posicion=1
+
+	self.arma=1
+	self.municion={"infinito",0,0}
+	self.stock={7,0,0}
+	self.max_municion={"infinito",100,60}
+	self.max_stock={7,25,20}
+
+	base.entidades.timer_player:every(0.15, function() 
+		if not self.estado.disparo then
+			if self.direccion.a or self.direccion.d or self.direccion.s or self.direccion.w then
+				if self.arma == 1 then
+					self.posicion=2
+				else
+					self.posicion=3
+				end
+			else
+				self.posicion=1
+			end
+		elseif  self.estado.disparo then
+			if self.arma==1 then
+				self.posicion=4
+			elseif self.arma==2 then
+				self.posicion=5
+			elseif self.arma==3 then
+				self.posicion=6
+			end
+		end
+ 	end)
+end
+
+function player:update(dt)
+
+...
+
+	if self.estado.correr then
+		if self.estado.disparo then
+			self.estado.correr=false
+		else
+			self.velocidad=650
+		end
+	else
+		self.velocidad=500
+	end
+end
+
+function player:mousepressed(x,y,button)
+	if button==1 then
+		self.estado.disparo=true
+	end
+end
+
+function player:mousereleased(x,y,button)
+	if button==1 then
+		self.estado.disparo=false
+	end
+end
+
+function player:keypressed(key)
+	if key=="a" then
+		self.direccion.a=true
+	elseif key=="d" then
+		self.direccion.d=true
+	end
+
+	if key=="w" then
+		self.direccion.w=true
+	elseif key=="s" then
+		self.direccion.s=true
+	end
+
+	if key=="space" then
+		self.estado.correr=true
+	end
+
+	if key=="1" then
+		self.arma=1
+	elseif key=="2" then
+		self.arma=2
+	elseif key=="3" then
+		self.arma=3
+	end
+end
+
+function player:keyreleased(key)
+	if key=="a" then
+		self.direccion.a=false
+	elseif key=="d" then
+		self.direccion.d=false
+	end
+
+	if key=="w" then
+		self.direccion.w=false
+	elseif key=="s" then
+		self.direccion.s=false
+	end
+
+	if key=="space" then
+		self.estado.correr=false
+	end
+end
+
+```
+
+Estamos implementando la libreria Timer, por lo tanto debemos agregarla en nuestro codigo de base.lua.
+```lua
+--base.lua
+local base = Class{
+	__includes = Gamestate,
+	init = function(self, mapfile)
+	self.map=sti(mapfile)
+	self.scale=0.7
+	self.cam=gamera.new(0,0,self.map.width*self.map.tilewidth, self.map.height*self.map.tileheight)
+	self.cam:setScale(self.scale)
+	self.map:resize(love.graphics.getWidth()*2,love.graphics.getHeight()*2)
+	self.collider = HC.new()
+	self.timer_player = Timer.new()
+	self.timer_enemigo= Timer.new()
+	entidades:enter(self.map,self.cam,self.collider,self.timer_player,self.timer_enemigo)
+	end;
+	entidades = entidades;
+}
+
+```
+
+Y actualizarlo constantemente en nuestro archivo entidades.
+```lua
+--entidades.lua
+function entidades:player_update(dt)
+	self.player:update(dt)
+
+	self.timer_player:update(dt)
+end
+```
+
+Esta libreria actualiza cada momento nuestro jugador, sin la necesidad de utilizar muchos contadores, esto puede hacer nuestro código mas legible para nosotros.
+
+Nuestro personaje ya puede movilizarse y cambia de animación de manera dinámica.
+
+![alt text](https://i.imgur.com/NW2VvRx.png)
+
+Lo que faltaría seria la creación de nuestras balas, nuestro jugador puede disparar, pero la creación del objeto bala no esta definida aun.
+
+Lo que haríamos es crear tal objeto, pero antes necesitamos las imágenes de nuestras balas.
+Para ello descargamos el siguiente [spritesheet](https://kenney.nl/assets/tower-defense-top-down),  en las imagenes de la carpeta PNG buscamos las siguientes imagenes, tanto con este spritesheet, como el que ya [usamos](https://kenney.nl/assets/topdown-shooter).
+
+![alt text](https://i.imgur.com/QpeOSs8.png)
+
+Utilizamos la siguiente [herramienta](http://zerosprites.com/) para crear spritesheets de manera sencilla.
+
+Le damos padding de 5, y utilizamos la [herramienta](http://www.spritecow.com/) para medir posiciones de nuestras imagenes, y la agregamos en nuestro archivo sprites.lua
