@@ -137,7 +137,6 @@ function player:mousepressed(x,y,button)
 
 				if self.max_municion[self.arma] == "infinito" then
 					self.stock[self.arma]=self.max_stock[self.arma]
-					print("a")
 				else
 					if self.municion[self.arma] + self.stock[self.arma] < self.max_stock[self.arma] then
 						self.stock[self.arma]=self.municion[self.arma]+self.stock[self.arma]
@@ -150,8 +149,6 @@ function player:mousepressed(x,y,button)
 				end
 				self.estado.recarga=false
 			end
-			
-
 		end)
 	end
 end
@@ -181,13 +178,16 @@ function player:keypressed(key)
 
 	if key=="1" then
 		self.arma=1
+		self.estado.recarga=false
 	elseif key=="2" then
 		self.arma=2
+		self.estado.recarga=false
 	elseif key=="3" then
 		self.arma=3
+		self.estado.recarga=false
 	end
 
-	self.estado.recarga=false
+	
 end
 
 function player:keyreleased(key)
@@ -217,7 +217,7 @@ end
 
 function player:create_bullet()
 	if self.stock[self.arma] > 0 then
-		base.entidades:add(Bala(self.ox,self.oy,self.arma,self.vel_bala[self.arma],self.radio,self.daño[self.arma]),"balas_p")
+		base.entidades:add(Bala(self.ox,self.oy,self.arma,self.vel_bala[self.arma],self.radio,self.daño[self.arma]),"balas")
 		self.stock[self.arma]= self.stock[self.arma] -1
 	end
 end

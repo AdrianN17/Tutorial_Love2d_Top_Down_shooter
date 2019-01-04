@@ -11,7 +11,7 @@ local entidades = {
 	solidos={},
 	destruible={},
 	objetos={},
-	balas={{},{}},
+	balas={},
 	limites={}
 }
 
@@ -36,10 +36,8 @@ function entidades:add(e,tipo)
 		table.insert(self.destruible,e)
 	elseif tipo == "objetos" then
 		table.insert(self.objetos,e)
-	elseif tipo == "balas_p" then
-		table.insert(self.balas[1],e)
-	elseif tipo == "balas_e" then
-		table.insert(self.balas[2],e)
+	elseif tipo == "balas" then
+		table.insert(self.balas,e)
 	end
 end
 
@@ -72,17 +70,10 @@ function entidades:remove(e,tipo)
 				return
 			end
 		end
-	elseif tipo == "balas_p" then
-		for i, ob in ipairs(self.balas[1]) do
+	elseif tipo == "balas" then
+		for i, ob in ipairs(self.balas) do
 			if ob == e then
-				table.remove(self.balas[1],i)
-				return
-			end
-		end
-	elseif tipo == "balas_e" then
-		for i, ob in ipairs(self.balas[2]) do
-			if ob == e then
-				table.remove(self.balas[2],i)
+				table.remove(self.balas,i)
 				return
 			end
 		end
@@ -96,7 +87,7 @@ function entidades:clear()
 	self.solidos={}
 	self.destruible={}
 	self.objetos={}
-	self.balas={{},{}}
+	self.balas={}
 	self.limites={}
 end
 
@@ -108,27 +99,27 @@ end
 function entidades:player_draw()
 	self.player:draw()
 
-	for _, e in ipairs(self.balas[1]) do
-		e:draw()
-	end
 end
 
 function entidades:player_update(dt)
 	self.player:update(dt)
 
 	self.timer_player:update(dt)
-
-	for _, e in ipairs(self.balas[1]) do
-		e:update(dt)
-	end
+	
 end
 
 function entidades:enemigos_draw()
-
+	for _, e in ipairs(self.enemigos) do
+		e:draw()
+	end
 end
 
 function entidades:enemigos_update(dt)
+	self.timer_enemigo:update(dt)
 
+	for _, e in ipairs(self.enemigos) do
+		e:update(dt)
+	end
 end
 
 function entidades:objetos_draw()
@@ -140,11 +131,15 @@ function entidades:objetos_update(dt)
 end
 
 function entidades:balas_draw()
-
+	for _, e in ipairs(self.balas) do
+		e:draw()
+	end
 end
 
 function entidades:balas_update(dt)
-
+	for _, e in ipairs(self.balas) do
+		e:update(dt)
+	end
 end
 
 function entidades:getmouseposition()
@@ -153,6 +148,36 @@ end
 
 function entidades:limit(table)
 	self.limites = table
+end
+
+
+function entidades:camera_visible(table_1)
+	if table_1.ox > self.limites.x and table_1.ox < self.limites.x + self.limites.w  and table_1.oy > self.limites.y  and table_1.oy < self.limites.y + self.limites.h then
+		return true
+	else
+		return false
+	end
+end
+
+function entidades:seek_player()
+	self.timer_enemigo:every(2, function() 
+		for _, zombie in ipairs(self.enemigos) do
+			if zombie.visible then
+				zombie.radio=math.atan2(self.player.oy-zombie.oy,self.player.ox-zombie.ox)
+				zombie.delta.y=math.sin(zombie.radio)
+				zombie.delta.x=math.cos(zombie.radio)
+				--zombie.delta:rotateInplace(zombie.radio)
+			end
+		end
+	end)
+
+	self.timer_enemigo:every(0.5, function() 
+		for _, zombie in ipairs(self.enemigos) do
+			if not zombie.collision then
+				zombie.velocidad=250
+			end
+		end
+	end)
 end
 
 --colisiones
@@ -165,6 +190,26 @@ function entidades:collisions()
 		if collision then
 			self.player.body:move(dx,dy)
 		end
+
+		for _,zombie in ipairs(self.enemigos) do
+			local dx,dy,collision=0,0,false
+			collision,dx,dy= zombie.body:collidesWith(solido.body) 
+
+			if collision then
+				zombie.velocidad=50
+				zombie.collision=true
+			end
+		end
+
+		for _,bala in ipairs(self.balas) do
+
+			local dx,dy,collision=0,0,false
+			collision,dx,dy=solido.body:collidesWith(bala.body) 
+
+			if collision then
+				self:remove(bala,"balas")
+			end
+		end
 	end
 
 	for _,destruible in ipairs(self.destruible) do
@@ -173,6 +218,50 @@ function entidades:collisions()
 
 		if collision then
 			self.player.body:move(dx,dy)
+		end
+
+		for _,bala in ipairs(self.balas) do
+			local dx,dy,collision=0,0,false
+			collision,dx,dy=destruible.body:collidesWith(bala.body) 
+
+			if collision then
+				destruible.hp=destruible.hp-bala.daño
+				self:remove(bala,"balas")
+				print(destruible.hp)
+			end
+		end
+	end
+
+	for _,zombie_1 in ipairs(self.enemigos) do
+		for _,zombie_2 in ipairs(self.enemigos) do
+			local dx,dy,collision=0,0,false
+			collision,dx,dy= zombie_1.body:collidesWith(zombie_2.body) 
+
+			if collision then
+				zombie_1.body:move(dx,dy)
+			end
+		end
+
+		for _,bala in ipairs(self.balas) do
+
+			local dx,dy,collision=0,0,false
+			collision,dx,dy=zombie_1.body:collidesWith(bala.body) 
+
+			if collision then
+				zombie_1:damage(bala)
+			end
+		end
+	end
+
+end
+
+--logica enemigos
+
+function entidades:script()
+
+	for _, zombie in ipairs(self.enemigos) do
+		if self:camera_visible(zombie) and not zombie.visible then
+			zombie:start()
 		end
 	end
 end

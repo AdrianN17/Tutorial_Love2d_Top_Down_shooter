@@ -145,7 +145,7 @@ local entidades = {
 	solidos={},
 	destruible={},
 	objetos={},
-	balas={{},{}}
+	balas={}
 }
 
 function entidades:enter(map,cam)
@@ -166,10 +166,8 @@ function entidades:add(e,tipo)
 		table.insert(self.destruible,e)
 	elseif tipo == "objetos" then
 		table.insert(self.objetos,e)
-	elseif tipo == "balas_p" then
-		table.insert(self.balas[1],e)
-	elseif tipo == "balas_e" then
-		table.insert(self.balas[2],e)
+	elseif tipo == "balas" then
+		table.insert(self.balas,e)
 	end
 end
 
@@ -202,17 +200,10 @@ function entidades:remove(e,tipo)
 				return
 			end
 		end
-	elseif tipo == "balas_p" then
-		for i, ob in ipairs(self.balas[1]) do
+	elseif tipo == "balas" then
+		for i, ob in ipairs(self.balas) do
 			if ob == e then
-				table.remove(self.balas[1],i)
-				return
-			end
-		end
-	elseif tipo == "balas_e" then
-		for i, ob in ipairs(self.balas[2]) do
-			if ob == e then
-				table.remove(self.balas[2],i)
+				table.remove(self.balas,i)
 				return
 			end
 		end

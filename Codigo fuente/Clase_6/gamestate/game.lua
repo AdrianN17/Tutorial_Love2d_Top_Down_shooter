@@ -7,7 +7,7 @@ spritesheet=nil
 local camview={x=0,y=0,w=0,h=0}
 
 local Player = require "entidades.player"
-
+local Zombie = require "entidades.enemigos"
 
 
 local game = Class{
@@ -31,6 +31,8 @@ function game:enter()
 	self:object()
 
 	self.map:removeLayer("Borrador")
+
+	base.entidades:seek_player()
 end
 
 function game:update(dt)
@@ -40,6 +42,8 @@ function game:update(dt)
 	base.entidades:collisions()
 
 	base.entidades:limit(camview)
+
+	base.entidades:script()
 end
 
 function game:draw()
@@ -121,7 +125,7 @@ function game:object()
 		elseif object.name == "Caja" then
 			be:add({body=self.collider:rectangle(object.x,object.y,object.width,-object.height),hp=5},"destruible")
 		elseif object.name == "Enemigo" then
-			
+			be:add(Zombie(object.x,object.y,object.width,object.height),"enemigos")
 		end
 	end
 end

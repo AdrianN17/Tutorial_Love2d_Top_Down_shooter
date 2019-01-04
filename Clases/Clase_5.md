@@ -12,7 +12,7 @@ Nuestro personaje puede:
 * Recibir daño de los enemigos.
 
 Nuestro personaje no puede:
-*  Sobrevivir mas de 10|5 balas|golpes de enemigos.
+*  Sobrevivir mas de 5 golpes de enemigos.
 * Atravesar muro sólidos.
 * Disparar continuamente.
 
@@ -617,7 +617,7 @@ local entidades = {
 	solidos={},
 	destruible={},
 	objetos={},
-	balas={{},{}}
+	balas={}
 }
 
 function entidades:enter(map,cam,collider,timer_player,timer_enemigo)
@@ -727,7 +727,7 @@ Modificamos de igual manera nuestro archivo entidades.lua para visualizar nuestr
 function entidades:player_draw()
 	self.player:draw()
 
-	for _, e in ipairs(self.balas[1]) do
+	for _, e in ipairs(self.balas) do
 		e:draw()
 	end
 end
@@ -737,7 +737,7 @@ function entidades:player_update(dt)
 
 	self.timer_player:update(dt)
 
-	for _, e in ipairs(self.balas[1]) do
+	for _, e in ipairs(self.balas) do
 		e:update(dt)
 	end
 end
@@ -812,7 +812,7 @@ function player:mousereleased(x,y,button)
 	end
 end
 function player:create_bullet()
-	base.entidades:add(Bala(self.ox,self.oy,self.arma,self.vel_bala[self.arma],self.radio),"balas_p")
+	base.entidades:add(Bala(self.ox,self.oy,self.arma,self.vel_bala[self.arma],self.radio),"balas")
 end
 ```
 
@@ -826,7 +826,7 @@ Pero, nuestro personaje dispara balas infinitas en los 3 casos, lo que debemos h
 --player.lua
 function player:create_bullet()
 	if self.stock[self.arma] > 0 then
-		base.entidades:add(Bala(self.ox,self.oy,self.arma,self.vel_bala[self.arma],self.radio),"balas_p")
+		base.entidades:add(Bala(self.ox,self.oy,self.arma,self.vel_bala[self.arma],self.radio),"balas")
 		self.stock[self.arma]= self.stock[self.arma] -1
 	end
 end
@@ -870,7 +870,6 @@ function player:mousepressed(x,y,button)
 
 				if self.max_municion[self.arma] == "infinito" then
 					self.stock[self.arma]=self.max_stock[self.arma]
-					print("a")
 				else
 					if self.municion[self.arma] + self.stock[self.arma] < self.max_stock[self.arma] then
 						self.stock[self.arma]=self.municion[self.arma]+self.stock[self.arma]
@@ -894,7 +893,16 @@ function player:keypressed(key)
 
 ...
 
-	self.estado.recarga=false
+	if key=="1" then
+		self.arma=1
+		self.estado.recarga=false
+	elseif key=="2" then
+		self.arma=2
+		self.estado.recarga=false
+	elseif key=="3" then
+		self.arma=3
+		self.estado.recarga=false
+	end
 end
 ```
 
@@ -936,7 +944,7 @@ local entidades = {
 	solidos={},
 	destruible={},
 	objetos={},
-	balas={{},{}},
+	balas={},
 	limites={}
 }
 
@@ -976,7 +984,7 @@ function balas:update(dt)
 	local be=base.entidades
 	...
 	if self.ox < be.limites.x or self.ox > be.limites.x + be.limites.w  or self.oy < be.limites.y  or self.oy > be.limites.y + be.limites.h then
-		be:remove(self,"balas_p")
+		be:remove(self,"balas")
 	end
 end
 ```
@@ -994,7 +1002,7 @@ function player:init(x,y,w,h)
 end
 function player:create_bullet()
 	if self.stock[self.arma] > 0 then
-		base.entidades:add(Bala(self.ox,self.oy,self.arma,self.vel_bala[self.arma],self.radio,self.daño[self.arma]),"balas_p")
+		base.entidades:add(Bala(self.ox,self.oy,self.arma,self.vel_bala[self.arma],self.radio,self.daño[self.arma]),"balas")
 		self.stock[self.arma]= self.stock[self.arma] -1
 	end
 end
