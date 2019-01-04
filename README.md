@@ -13,7 +13,7 @@ En este taller mediante la utilización del lenguaje Lua se planea la creación 
 
 * [Creación y animación de personaje](https://github.com/AdrianN17/Tutorial_Love2d_Top_Down_shooter/blob/master/Clases/Clase_5.md)
 
-* [Creación y animación del enemigo y objetos del mapa](https://pages.github.com/)
+* [Creación y animación del enemigo y objetos del mapa](https://github.com/AdrianN17/Tutorial_Love2d_Top_Down_shooter/blob/master/Clases/Clase_6.md)
 
 * [Recomendaciones finales](https://pages.github.com/)
 
