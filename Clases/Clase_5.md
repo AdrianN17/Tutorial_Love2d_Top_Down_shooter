@@ -1,6 +1,6 @@
 # Creación y animación de personaje
 
-Anteriormente habiamos creados las bases de nuestro juego, ahora nos toca crear a nuestro personaje y sus funcionalidades, para ello debemos definir como va a interactuar en nuestro juego.
+Anteriormente habíamos creados las bases de nuestro juego, ahora nos toca crear a nuestro personaje y sus funcionalidades, para ello debemos definir como va a interactuar en nuestro juego.
 
 Nuestro personaje puede:
 * Caminar.
@@ -67,9 +67,17 @@ Ahora, lo llamamos en nuestro archivo game.lua, y lo mandaremos como variable gl
 --las librerias llamadas
 local sprites = require "assets.img.sprites"
 
-spritesheet= sprites
+spritesheet=nil
 
---local game = Class ... lo que sigue
+local game = Class{
+	__includes = base
+}
+
+function game:init()
+	spritesheet = sprites
+end
+
+...
 
 ```
 
@@ -208,6 +216,8 @@ function player:update(dt)
 
 	
     self.body:move(delta:unpack())
+    
+	self.body:setRotation(self.radio)
 
 	self.ox,self.oy=self.body:center()
 end
@@ -595,6 +605,31 @@ local base = Class{
 Y actualizarlo constantemente en nuestro archivo entidades.
 ```lua
 --entidades.lua
+
+local entidades = {
+	map=nil,
+	cam=nil,
+	collider=nil,
+	player=nil,
+	enemigos={},
+	timer_player=nil,
+	timer_enemigo=nil,
+	solidos={},
+	destruible={},
+	objetos={},
+	balas={{},{}}
+}
+
+function entidades:enter(map,cam,collider,timer_player,timer_enemigo)
+	self.map=map
+	self.cam=cam
+	self.collider=collider
+	self.timer_player=timer_player
+	self.timer_enemigo=timer_enemigo
+end
+
+...
+
 function entidades:player_update(dt)
 	self.player:update(dt)
 
@@ -617,4 +652,363 @@ Para ello descargamos el siguiente [spritesheet](https://kenney.nl/assets/tower-
 
 Utilizamos la siguiente [herramienta](http://zerosprites.com/) para crear spritesheets de manera sencilla.
 
-Le damos padding de 5, y utilizamos la [herramienta](http://www.spritecow.com/) para medir posiciones de nuestras imagenes, y la agregamos en nuestro archivo sprites.lua
+Le damos padding de 5, y utilizamos la [herramienta](http://www.spritecow.com/) para medir posiciones de nuestras imagenes, y la agregamos en nuestro archivo sprites.lua.
+
+Debería quedar de la siguiente manera:
+```lua
+--sprites.lua
+local sprites={}
+
+	...
+	
+	sprites["img2"]= love.graphics.newImage("assets/img/sprites.png")
+
+	sprites["armas"]={}
+	sprites["armas"][1]= love.graphics.newQuad(45,207,19,10,sprites["img2"]:getDimensions())
+	sprites["armas"][2]= love.graphics.newQuad(0,222,25,10,sprites["img2"]:getDimensions())
+	sprites["armas"][3]= love.graphics.newQuad(0,207,33,10,sprites["img2"]:getDimensions())
+
+	sprites["balas"]={}
+	sprites["balas"][1]= love.graphics.newQuad(24,93,16,16,sprites["img2"]:getDimensions())
+	sprites["balas"][2]= love.graphics.newQuad(24,162,16,16,sprites["img2"]:getDimensions())
+	sprites["balas"][3]= love.graphics.newQuad(24,24,16,16,sprites["img2"]:getDimensions())
+return sprites
+```
+
+Ahora en nuestro archivo bala.lua
+
+```lua
+--bala.lua
+local Class = require "libs.class"
+local base = require "gamestate.base"
+local entidad = require "entidades.entidad"
+local vector = require "libs.vector"
+
+local balas = Class{
+	__includes = entidad
+}
+
+function balas:init(x,y,tipo,velocidad,direccion)
+
+	self.body=base.entidades.collider:circle(x,y,8)
+
+
+	self.spritesheet=spritesheet.img2
+
+	self.imgbala=spritesheet.balas[tipo]
+
+	self.ox,self.oy=self.body:center()
+
+	self.delta=vector(1,0)
+	self.delta:rotateInplace(direccion)
+	self.delta=self.delta*velocidad
+
+end
+
+function balas:draw()
+	love.graphics.draw(self.spritesheet,self.imgbala,self.ox,self.oy,0,0.5,0.5,8,8)
+end
+
+function balas:update(dt)
+	local delta=self.delta
+	delta=delta*dt
+
+	self.body:move(delta:unpack())
+	self.ox,self.oy=self.body:center()
+end
+
+return balas
+```
+
+Modificamos de igual manera nuestro archivo entidades.lua para visualizar nuestras balas, con el siguiente código:
+
+```lua
+--entidades.lua
+function entidades:player_draw()
+	self.player:draw()
+
+	for _, e in ipairs(self.balas[1]) do
+		e:draw()
+	end
+end
+
+function entidades:player_update(dt)
+	self.player:update(dt)
+
+	self.timer_player:update(dt)
+
+	for _, e in ipairs(self.balas[1]) do
+		e:update(dt)
+	end
+end
+```
+
+Y en nuestro archivo player.lua, invocamos nuestras balas
+```lua
+--player.lua
+local Bala= require "entidades.balas"
+
+function player:init(x,y,w,h)
+
+	...
+
+	self.arma=1
+	self.municion={"infinito",0,0}
+	self.stock={7,0,0}
+	self.max_municion={"infinito",100,60}
+	self.max_stock={7,25,20}
+
+	self.vel_bala={700,1000,1200}
+
+	base.entidades.timer_player:every(0.15, function() 
+		if not self.estado.disparo then
+			if self.direccion.a or self.direccion.d or self.direccion.s or self.direccion.w then
+				if self.arma == 1 then
+					self.posicion=2
+				else
+					self.posicion=3
+				end
+			else
+				self.posicion=1
+			end
+		elseif  self.estado.disparo then
+			if self.arma==1 then
+				self.posicion=4
+				self.estado.disparo=false
+			elseif self.arma==2 then
+				self.posicion=5
+			elseif self.arma==3 then
+				self.posicion=6
+			end
+		end
+
+		if self.estado.disparo and self.arma==2 then
+			self:create_bullet()
+		end
+ 	end)
+
+ 	base.entidades.timer_player:every(0.1, function()
+ 		if self.estado.disparo and self.arma==3 then
+			self:create_bullet()
+		end
+ 	end)
+end
+function player:mousepressed(x,y,button)
+	if button==1 and self.arma>1 then
+		self.estado.disparo=true
+	elseif button==1 and self.arma==1 then
+		self.estado.disparo=true
+		self:create_bullet()
+	elseif button==2 then
+		
+	end
+end
+
+function player:mousereleased(x,y,button)
+	if button==1 and self.arma>1 then
+		self.estado.disparo=false
+	elseif button==2 then
+
+	end
+end
+function player:create_bullet()
+	base.entidades:add(Bala(self.ox,self.oy,self.arma,self.vel_bala[self.arma],self.radio),"balas_p")
+end
+```
+
+El resultado seria el siguiente:
+
+![alt text](https://i.imgur.com/REyCdZL.png)
+
+Pero, nuestro personaje dispara balas infinitas en los 3 casos, lo que debemos hacer es limitar su capacidad a solo una cantidad de balas, para ello agregaremos el siguiente código en la funcion create_bullet():
+
+```lua
+--player.lua
+function player:create_bullet()
+	if self.stock[self.arma] > 0 then
+		base.entidades:add(Bala(self.ox,self.oy,self.arma,self.vel_bala[self.arma],self.radio),"balas_p")
+		self.stock[self.arma]= self.stock[self.arma] -1
+	end
+end
+```
+
+Lo que hacemos es limitar a que la cantidad de stock sea mayor a 0, y si lo cumple disminuimos en 1 la cantidad (disparamos 1 bala), lo que faltaría seria la recarga de nuestras balas.
+
+Para ello agregaremos un estado adicional  en la funcion player:init()
+
+```lua
+--player.lua
+self.estado={ correr = false, inmunidad = false, vida = true, disparo=false, recarga=false}
+
+self.arma=1
+self.municion={7,0,0}
+self.stock={7,0,0}
+self.max_municion={"infinito",100,60}
+self.max_stock={7,25,20}
+
+self.vel_bala={700,1000,1200}
+
+self.recarga_vel={0.5,0.8,1}
+```
+
+Y en la funcion mousepressed y  keypressed se agregan el siguiente script:
+```lua
+function player:mousepressed(x,y,button)
+	if button==1 and self.arma>1 then
+		self.estado.disparo=true
+		self.estado.recarga=false
+	elseif button==1 and self.arma==1 then
+		self.estado.disparo=true
+		self:create_bullet()
+		self.estado.recarga=false
+	elseif button==2 and self.stock[self.arma] < self.max_stock[self.arma] and not self.estado.recarga then
+		self.estado.recarga=true
+
+		base.entidades.timer_player:after(self.recarga_vel[self.arma] , function() 
+
+			if self.estado.recarga then
+
+				if self.max_municion[self.arma] == "infinito" then
+					self.stock[self.arma]=self.max_stock[self.arma]
+					print("a")
+				else
+					if self.municion[self.arma] + self.stock[self.arma] < self.max_stock[self.arma] then
+						self.stock[self.arma]=self.municion[self.arma]+self.stock[self.arma]
+						self.municion[self.arma]=0
+					else
+						local carga=self.max_stock[self.arma]-self.stock[self.arma]
+						self.stock[self.arma]=self.stock[self.arma]+carga
+						self.municion[self.arma]=self.municion[self.arma]-carga
+					end
+				end
+				self.estado.recarga=false
+			end
+			
+
+		end)
+	end
+end
+
+
+function player:keypressed(key)
+
+...
+
+	self.estado.recarga=false
+end
+```
+
+En este momento, nuestro usuario manera una cantidad limitada de balas, excepto en las pistolas que son ilimitadas.
+
+Pero, nuestro personaje, si nos fijamos bien y con algo de curiosidad, puede salirse de la camara, y nuestras balas continúan de manera infinita su recorrido, lo que seria un gasto de memoria. Para solucionarlo, vamos a delimitar el alcance de nuestro jugador y balas.
+```lua
+--player.lua
+function player:update(dt)
+	local delta = vector(0,0)
+
+	local be=base.entidades
+	if self.direccion.a and self.ox > be.limites.x then
+		delta.x=-1
+	elseif self.direccion.d and self.ox < be.limites.x + be.limites.w then
+		delta.x=1
+	end
+
+	if self.direccion.w and self.oy > be.limites.y then
+		delta.y=-1
+	elseif self.direccion.s and self.oy < be.limites.y + be.limites.h then
+		delta.y=1
+	end
+end
+```
+
+Creamos una function en entidades.lua
+
+```lua
+--entidades.lua
+local entidades = {
+	map=nil,
+	cam=nil,
+	collider=nil,
+	player=nil,
+	enemigos={},
+	timer_player=nil,
+	timer_enemigo=nil,
+	solidos={},
+	destruible={},
+	objetos={},
+	balas={{},{}},
+	limites={}
+}
+
+function entidades:clear()
+
+	...
+
+	self.limites={}
+end
+
+function entidades:limit(table)
+	self.limites = table
+end
+
+```
+
+y la implementamos en game.lua
+
+```lua
+--game.lua
+function game:update(dt)
+
+	self.map:update(dt)
+
+	base.entidades:collisions()
+
+	base.entidades:limit(camview)
+end
+```
+
+Lo mismo para las balas, si la bala pasa la cámara entonces sera eliminada para ahorrar memoria:
+
+```lua
+--balas.lua
+
+function balas:update(dt)
+	local be=base.entidades
+	...
+	if self.ox < be.limites.x or self.ox > be.limites.x + be.limites.w  or self.oy < be.limites.y  or self.oy > be.limites.y + be.limites.h then
+		be:remove(self,"balas_p")
+	end
+end
+```
+
+Por ultimo, agregamos en daño que haremos al objeto/enemigo que impacte nuestras balas.
+```lua
+--player.lua
+function player:init(x,y,w,h)
+
+	...
+	
+	self.daño={1,2.5,5}
+	...
+
+end
+function player:create_bullet()
+	if self.stock[self.arma] > 0 then
+		base.entidades:add(Bala(self.ox,self.oy,self.arma,self.vel_bala[self.arma],self.radio,self.daño[self.arma]),"balas_p")
+		self.stock[self.arma]= self.stock[self.arma] -1
+	end
+end
+```
+
+```lua
+--balas.lua
+function balas:init(x,y,tipo,velocidad,direccion,daño)
+
+	...
+	
+	self.daño=daño
+	
+	...
+
+end
+```
