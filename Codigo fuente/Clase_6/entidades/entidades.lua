@@ -12,7 +12,9 @@ local entidades = {
 	destruible={},
 	objetos={},
 	balas={},
-	limites={}
+	limites={},
+	respawn_enemigos={},
+	cantidad_zombies=0
 }
 
 function entidades:enter(map,cam,collider,timer_player,timer_enemigo)
@@ -89,6 +91,8 @@ function entidades:clear()
 	self.objetos={}
 	self.balas={}
 	self.limites={}
+	self.respawn_enemigos={}
+	self.cantidad_zombies=0
 end
 
 function entidades:position()
@@ -123,7 +127,9 @@ function entidades:enemigos_update(dt)
 end
 
 function entidades:objetos_draw()
-
+	for _, e in ipairs(self.objetos) do
+		e:draw()
+	end
 end
 
 function entidades:objetos_update(dt)
@@ -166,7 +172,6 @@ function entidades:seek_player()
 				zombie.radio=math.atan2(self.player.oy-zombie.oy,self.player.ox-zombie.ox)
 				zombie.delta.y=math.sin(zombie.radio)
 				zombie.delta.x=math.cos(zombie.radio)
-				--zombie.delta:rotateInplace(zombie.radio)
 			end
 		end
 	end)
@@ -227,12 +232,34 @@ function entidades:collisions()
 			if collision then
 				destruible.hp=destruible.hp-bala.daño
 				self:remove(bala,"balas")
-				print(destruible.hp)
+			end
+		end
+
+		for _,zombie in ipairs(self.enemigos) do
+			local dx,dy,collision=0,0,false
+			collision,dx,dy=zombie.body:collidesWith(destruible.body) 
+
+			if collision then
+				zombie.body:move(dx,dy)
+
+				if  not zombie.atacando then
+					destruible.hp=destruible.hp-zombie.daño
+					zombie.atacando=true
+
+					self.timer_enemigo:after(1, function () zombie.atacando=false end)
+				end
 			end
 		end
 	end
 
 	for _,zombie_1 in ipairs(self.enemigos) do
+		local dx,dy,collision=0,0,false
+		collision,dx,dy= self.player.body:collidesWith(zombie_1.body) 
+
+		if collision and not self.player.estado.inmunidad then
+			self.player:damage(zombie_1)
+		end
+
 		for _,zombie_2 in ipairs(self.enemigos) do
 			local dx,dy,collision=0,0,false
 			collision,dx,dy= zombie_1.body:collidesWith(zombie_2.body) 
@@ -253,6 +280,15 @@ function entidades:collisions()
 		end
 	end
 
+	for _, objeto in ipairs(self.objetos) do
+		local dx,dy,collision=0,0,false
+		collision,dx,dy= self.player.body:collidesWith(objeto.body) 
+
+		if collision then
+			objeto:reload(self.player)
+		end
+	end
+
 end
 
 --logica enemigos
@@ -264,6 +300,22 @@ function entidades:script()
 			zombie:start()
 		end
 	end
+end
+
+function entidades:respawn_all(objeto)
+	for _, posicion in ipairs(self.respawn_enemigos) do
+		self:add(objeto(posicion.x,posicion.y),"enemigos")
+	end
+
+	self.cantidad_zombies=self.cantidad_zombies+7
+end
+
+function entidades:respawn_random(objeto)
+	local seed = love.math.random(1,7)
+	local tabla=self.respawn_enemigos[seed]
+	self:add(objeto(tabla.x,tabla.y) ,"enemigos")
+
+	self.cantidad_zombies=self.cantidad_zombies+1
 end
 
 function entidades:keypressed(key)
@@ -282,13 +334,13 @@ function entidades:mousereleased(x, y, button)
 	self.player:mousereleased(x, y, button)
 end
 
-function entidades:replace_tile(layer, tilex, tiley, newTileGid)
-	local x=(tilex/self.map.tilewidth)+1
-	local y=(tiley/self.map.tileheight)+1
+function entidades:replace_tile(layer, tile, newTileGid)
+	local x=(tile.x/self.map.tilewidth)+1
+	local y=(tile.y/self.map.tileheight)+1
 
 	layer = self.map.layers[layer]
 	for i, instance in ipairs(self.map.tileInstances[layer.data[y][x].gid]) do
-		if instance.layer == layer and instance.x == tilex and instance.y == tiley then
+		if instance.layer == layer and instance.x == tile.x and instance.y == tile.y then
 		  instance.batch:set(instance.id, self.map.tiles[newTileGid].quad, instance.x, instance.y)
 		  break
 		end

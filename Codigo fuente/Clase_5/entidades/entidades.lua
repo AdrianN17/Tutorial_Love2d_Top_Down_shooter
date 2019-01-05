@@ -184,13 +184,13 @@ function entidades:mousereleased(x, y, button)
 	self.player:mousereleased(x, y, button)
 end
 
-function entidades:replace_tile(layer, tilex, tiley, newTileGid)
-	local x=(tilex/self.map.tilewidth)+1
-	local y=(tiley/self.map.tileheight)+1
+function entidades:replace_tile(layer, tile, newTileGid)
+	local x=(tile.x/self.map.tilewidth)+1
+	local y=(tile.y/self.map.tileheight)+1
 
 	layer = self.map.layers[layer]
 	for i, instance in ipairs(self.map.tileInstances[layer.data[y][x].gid]) do
-		if instance.layer == layer and instance.x == tilex and instance.y == tiley then
+		if instance.layer == layer and instance.x == tile.x and instance.y == tile.y then
 		  instance.batch:set(instance.id, self.map.tiles[newTileGid].quad, instance.x, instance.y)
 		  break
 		end

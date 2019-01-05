@@ -7,10 +7,9 @@ local enemigos = Class{
 	__includes = entidad
 }
 
-function enemigos:init(x,y,w,h)
+function enemigos:init(x,y)
 
-	self.body=base.entidades.collider:rectangle(x,y,w,h)
-	self.w,self.h=w,h
+	self.body=base.entidades.collider:rectangle(x,y,35,43)
 
 	self.velocidad=250
 
@@ -33,11 +32,13 @@ function enemigos:init(x,y,w,h)
 
 	self.daño=2
 
+	self.atacando=false
+
 end
 
 function enemigos:draw()
 	love.graphics.print(self.velocidad,self.ox,self.oy-100)
-	love.graphics.draw(self.spritesheet,self.imgs[self.posicion],self.ox,self.oy,self.radio,1,1,self.w/2,self.h/2)
+	love.graphics.draw(self.spritesheet,self.imgs[self.posicion],self.ox,self.oy,self.radio,1,1,35/2,43/2)
 
 end
 
@@ -65,12 +66,15 @@ end
 
 function enemigos:damage(agresor)
 
+	local be=base.entidades
+
 	self.hp=self.hp-agresor.daño
 
-	base.entidades:remove(agresor,"balas")
+	be:remove(agresor,"balas")
 
 	if self.hp<1 then
-		base.entidades:remove(self,"enemigos")
+		be:remove(self,"enemigos")
+		be.cantidad_zombies=be.cantidad_zombies-1
 	end
 end
 

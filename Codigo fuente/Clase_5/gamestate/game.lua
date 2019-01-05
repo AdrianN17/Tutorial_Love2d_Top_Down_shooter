@@ -104,7 +104,7 @@ function game:tiles(pos)
 						x,y,w,h=obj.x,obj.y,obj.width,obj.height
 					end
 
-					be:add({body=self.collider:rectangle(tx+x,ty+y,w,h),hp=5},"destruible")
+					be:add({body=self.collider:rectangle(tx+x,ty+y,w,h),x=tx,y=ty,hp=5,gid=tile.gid, tipo="pared"},"destruible")
 				end
 			end
 		end

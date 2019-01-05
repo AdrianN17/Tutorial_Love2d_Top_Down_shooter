@@ -222,4 +222,17 @@ function player:create_bullet()
 	end
 end
 
+function player:damage(agresor)
+
+	self.hp=self.hp-agresor.daño
+
+	if self.hp>1 then
+
+	end
+
+	self.estado.inmunidad=true
+
+	base.entidades.timer_player:after(1, function() self.estado.inmunidad=false end)
+end
+
 return player

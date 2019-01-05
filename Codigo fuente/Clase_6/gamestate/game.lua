@@ -9,6 +9,10 @@ local camview={x=0,y=0,w=0,h=0}
 local Player = require "entidades.player"
 local Zombie = require "entidades.enemigos"
 
+local Municion = require "entidades.municion"
+local Vida = require "entidades.vida"
+
+local intervalo=0
 
 local game = Class{
 	__includes = base
@@ -19,6 +23,8 @@ function game:init()
 end
 
 function game:enter()
+	intervalo=2.5
+
 	base.entidades:clear()
 	base.init(self,"assets/mapas/mapa.lua")
 
@@ -32,7 +38,27 @@ function game:enter()
 
 	self.map:removeLayer("Borrador")
 
+	base.entidades:respawn_all(Zombie)
+
+
 	base.entidades:seek_player()
+
+	base.entidades.timer_player:every(intervalo, function() 
+		local be=base.entidades
+
+		if be.cantidad_zombies<1 then
+			be:respawn_all(Zombie)
+		else
+			be:respawn_random(Zombie)
+		end
+	end)
+
+	base.entidades.timer_player:every(25, function() 
+		if intervalo>0.75 then
+			intervalo=intervalo-0.25
+		end
+
+	end)
 end
 
 function game:update(dt)
@@ -44,6 +70,8 @@ function game:update(dt)
 	base.entidades:limit(camview)
 
 	base.entidades:script()
+
+	self:change_items()
 end
 
 function game:draw()
@@ -108,7 +136,7 @@ function game:tiles(pos)
 						x,y,w,h=obj.x,obj.y,obj.width,obj.height
 					end
 
-					be:add({body=self.collider:rectangle(tx+x,ty+y,w,h),hp=5},"destruible")
+					be:add({body=self.collider:rectangle(tx+x,ty+y,w,h),x=tx,y=ty,hp=5,gid=tile.gid, tipo="pared"},"destruible")
 				end
 			end
 		end
@@ -123,9 +151,9 @@ function game:object()
 		if object.name == "Player" then
 			be:actor(Player(object.x,object.y,object.width,object.height))
 		elseif object.name == "Caja" then
-			be:add({body=self.collider:rectangle(object.x,object.y,object.width,-object.height),hp=5},"destruible")
+			be:add({body=self.collider:rectangle(object.x,object.y,object.width,-object.height),hp=5,tipo="caja",gid=object.gid, x=object.x, y=object.y-object.height},"destruible")
 		elseif object.name == "Enemigo" then
-			be:add(Zombie(object.x,object.y,object.width,object.height),"enemigos")
+			table.insert(be.respawn_enemigos,{x = object.x , y = object.y})
 		end
 	end
 end
@@ -136,19 +164,42 @@ function game:layers()
 	be=base.entidades
 
 	function layer_personajes:draw()
+		be:objetos_draw()
 		be:balas_draw()
 		be:enemigos_draw()
 		be:player_draw()
-
-		be:objetos_draw()
 	end
 
 	function layer_personajes:update(dt)
-		be:balas_update(dt)
-		be:enemigos_update(dt)
 		be:player_update(dt)
-
+		be:enemigos_update(dt)
+		be:balas_update(dt)
 		be:objetos_update(dt)
+	end
+end
+
+function game:change_items()
+	local be=base.entidades
+
+	for _,destruible in ipairs(be.destruible) do
+		if destruible.hp<1 and destruible.tipo=="caja" then
+			local x,y=destruible.body:center()
+
+			local random= love.math.random(1,10)
+
+			if random >=5 then
+				be:add(Municion(x,y),"objetos")
+			else
+				be:add(Vida(x,y),"objetos")
+			end
+
+			be:remove(destruible,"destruible")
+			be:replace_object(destruible,265)
+		elseif destruible.hp< 1 and destruible.tipo=="pared" then
+			local random={265,292}
+			be:remove(destruible,"destruible")
+			be:replace_tile(2,destruible,random[love.math.random(1,2)])
+		end
 	end
 end
 

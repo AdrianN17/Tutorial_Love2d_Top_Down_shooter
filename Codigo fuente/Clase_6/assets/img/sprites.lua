@@ -29,4 +29,20 @@ local sprites={}
 	sprites["balas"][1]= love.graphics.newQuad(24,93,16,16,sprites["img2"]:getDimensions())
 	sprites["balas"][2]= love.graphics.newQuad(24,162,16,16,sprites["img2"]:getDimensions())
 	sprites["balas"][3]= love.graphics.newQuad(24,24,16,16,sprites["img2"]:getDimensions())
+
+	sprites["img3"]= love.graphics.newImage("assets/img/sprites_2.png")
+
+	sprites["vida"] = love.graphics.newQuad(155,153,24,24,sprites["img3"]:getDimensions())
+
+	sprites["hp"]={}
+	sprites["hp"][1]= love.graphics.newQuad(196,75,6,26,sprites["img3"]:getDimensions())
+	sprites["hp"][1]= love.graphics.newQuad(184,151,16,26,sprites["img3"]:getDimensions())
+	sprites["hp"][1]= love.graphics.newQuad(196,106,6,26,sprites["img3"]:getDimensions())
+
+	sprites["ui"]= love.graphics.newQuad(50,75,100,100,sprites["img3"]:getDimensions())
+
+	sprites["mouse"]={}
+	sprites["mouse"][1]= love.graphics.newQuad(155,75,36,36,sprites["img3"]:getDimensions())
+	sprites["mouse"][2]= love.graphics.newQuad(157,116,30,30,sprites["img3"]:getDimensions())
+	 
 return sprites
