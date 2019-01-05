@@ -226,7 +226,7 @@ function player:damage(agresor)
 
 	self.hp=self.hp-agresor.daño
 
-	if self.hp>1 then
+	if self.hp<1 then
 
 	end
 

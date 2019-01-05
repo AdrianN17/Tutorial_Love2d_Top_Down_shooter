@@ -289,7 +289,7 @@ function player:damage(agresor)
 
 	self.hp=self.hp-agresor.daño
 	
-	if self.hp>1 then
+	if self.hp<1 then
 
 	end
 
@@ -453,8 +453,8 @@ Creamos un spritesheet con nuestra [herramienta](http://zerosprites.com/), tal c
 
 	sprites["hp"]={}
 	sprites["hp"][1]= love.graphics.newQuad(196,75,6,26,sprites["img3"]:getDimensions())
-	sprites["hp"][1]= love.graphics.newQuad(184,151,16,26,sprites["img3"]:getDimensions())
-	sprites["hp"][1]= love.graphics.newQuad(196,106,6,26,sprites["img3"]:getDimensions())
+	sprites["hp"][2]= love.graphics.newQuad(184,151,16,26,sprites["img3"]:getDimensions())
+	sprites["hp"][3]= love.graphics.newQuad(196,106,6,26,sprites["img3"]:getDimensions())
 
 	sprites["ui"]= love.graphics.newQuad(50,75,100,100,sprites["img3"]:getDimensions())
 
