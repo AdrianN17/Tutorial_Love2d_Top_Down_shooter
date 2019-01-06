@@ -566,7 +566,8 @@ Ejecutamos nuestro juego y listo, hemos terminado.
 
 Ejecutable del juego [aquí](https://drive.google.com/open?id=1-z7FfCYuMUoTaVAXy8ZjcCvviBIRUs_b)
 
-### Continuara..
+## Continuara..
+
 Ahora que ya has visto como funciona el framework Love2d, y has creado tu primer juego, te invito a continuar creando mas videojuegos, descubriendo nuevas mecanicas divertidas y dejando volar tu imaginacion. 
 
 **Gracias por leer este tutorial**
