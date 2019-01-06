@@ -1,9 +1,12 @@
 local Gamestate = require "libs.gamestate"
+
 local base = require "gamestate.base"
 local Class = require "libs.class"
 local sprites = require "assets.img.sprites"
 
 spritesheet=nil
+sonido=nil
+
 local camview={x=0,y=0,w=0,h=0}
 
 local Player = require "entidades.player"
@@ -13,9 +16,14 @@ local Municion = require "entidades.municion"
 local Vida = require "entidades.vida"
 
 local pausa = require "gamestate.pausa"
+local serialize = require "libs.ser"
+
+local sound= require "assets.sound.sonido"
 
 local intervalo=0
 local counter=0
+
+local be=base.entidades
 
 local game = Class{
 	__includes = base
@@ -23,6 +31,7 @@ local game = Class{
 
 function game:init()
 	spritesheet = sprites
+	sonido=sound
 end
 
 function game:enter()
@@ -39,23 +48,24 @@ function game:enter()
 
 	self.map:removeLayer("Borrador")
 
-	base.entidades:respawn_all(Zombie)
+	be:respawn_all(Zombie)
 
 
-	base.entidades:seek_player()
+	be:seek_player()
 
-	base.entidades.timer_player:every(intervalo, function() 
-		local be=base.entidades
+	be.timer_player:every(intervalo, function() 
 
-		if be.cantidad_zombies<1 then
-			be:respawn_all(Zombie)
-		else
-			be:respawn_random(Zombie)
+		if be.player.estado.vida then
+			if be.cantidad_zombies<1 then
+				be:respawn_all(Zombie)
+			else
+				be:respawn_random(Zombie)
+			end
 		end
 	end)
 
-	base.entidades.timer_player:every(25, function() 
-		if intervalo>0.75 then
+	be.timer_player:every(25, function() 
+		if intervalo>0.75 and be.player.estado.vida then
 			intervalo=intervalo-0.25
 		end
 
@@ -66,11 +76,11 @@ function game:update(dt)
 
 	self.map:update(dt)
 
-	base.entidades:collisions()
+	be:collisions()
 
-	base.entidades:limit(camview)
+	be:limit(camview)
 
-	base.entidades:script()
+	be:script()
 
 	self:change_items()
 
@@ -80,43 +90,70 @@ end
 function game:draw()
 	camview.x,camview.y,camview.w,camview.h=self.cam:getVisible()
 	self.map:draw(-camview.x,-camview.y,self.scale,self.scale)
-	self.cam:setPosition(base.entidades:position())
+	self.cam:setPosition(be:position())
+
+	if be.player.estado.recarga then
+		love.graphics.print("Recargando ... ", 400,300)
+	end
+
+	if not be.player.estado.vida then
+		love.graphics.draw(spritesheet.muerte,180,250)
+		love.graphics.print("Presione enter para continuar, M para volver al menu",160,400)
+	end
+
 
 	self:ui()
 
-	--love.graphics.print('Memory actually used (in kB): ' .. counter, 600,50)
+	--love.graphics.print('Memory actually used (in kB): ' .. counter, 580,50,0,0.7,0.7)
 end
 
 function game:mousepressed(x,y,button)
 	local cx,cy=self.cam:toWorld(x,y)
-	base.entidades:mousepressed(cx,cy,button)
+	be:mousepressed(cx,cy,button)
 end
 
 function game:mousereleased(x,y,button)
 	local cx,cy=self.cam:toWorld(x,y)
-	base.entidades:mousereleased(cx,cy,button)
+	be:mousereleased(cx,cy,button)
 end
 
 function game:keypressed(key)
-	base.entidades:keypressed(key)
+	be:keypressed(key)
 
-	if key=="return"  and not base.entidades.player.estado.vida then
-		base.entidades:clear()
+	if key=="return"  and not be.player.estado.vida then
+		self:save_score()
+		be:clear()
 		self:enter()
+
+
+	elseif key=="m" and not be.player.estado.vida then
+		self:save_score()
+		be:clear()
+		Gamestate.switch(menu)
 	end
 
-	if key=="p" and base.entidades.player.estado.vida then
+
+	if key=="p" and be.player.estado.vida then
 		Gamestate.push(pausa)
 	end
 end
 
 function game:keyreleased(key)
-	base.entidades:keyreleased(key)
+	be:keyreleased(key)
+end
+
+function game:save_score()
+	if love.filesystem.getInfo("score.lua") then
+		local old_data=love.filesystem.load("score.lua")()
+
+		if old_data.score<be.player.score then
+			love.filesystem.write("score.lua",serialize({score=be.player.score}))
+		end
+	end
 end
 
 function game:tiles(pos)
 
-	local be=base.entidades
 	
 
 	for y=1, self.map.height,1 do
@@ -161,7 +198,6 @@ function game:tiles(pos)
 end
 
 function game:object()
-	local be=base.entidades
 
 	for i, object in pairs(self.map.objects) do
 		if object.name == "Player" then
@@ -177,7 +213,6 @@ end
 function game:layers()
 	local layer_personajes = self.map.layers["Personajes"]
 
-	be=base.entidades
 
 	function layer_personajes:draw()
 		be:objetos_draw()
@@ -195,7 +230,6 @@ function game:layers()
 end
 
 function game:change_items()
-	local be=base.entidades
 
 	for _,destruible in ipairs(be.destruible) do
 		if destruible.hp<1 and destruible.tipo=="caja" then
@@ -221,7 +255,7 @@ end
 
 function game:ui()
 	love.graphics.draw(spritesheet.img3,spritesheet.ui,100,525)
-	local play=base.entidades.player
+	local play=be.player
 	local k=0
 
 	for i=1,3,1 do

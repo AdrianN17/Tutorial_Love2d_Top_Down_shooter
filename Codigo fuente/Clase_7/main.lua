@@ -1,9 +1,11 @@
 local Gamestate = require "libs.gamestate"
-local game= require "gamestate.game"
+local menu = require "gamestate.menu"
 
 
 function love.load()
 	love.mouse.setVisible(false)
 	Gamestate.registerEvents()
-	Gamestate.switch(game)
+	Gamestate.switch(menu)
+
+	love.graphics.setNewFont("assets/font/lunchds.ttf", 20)
 end

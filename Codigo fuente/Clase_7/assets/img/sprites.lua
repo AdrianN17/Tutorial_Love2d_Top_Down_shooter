@@ -44,5 +44,12 @@ local sprites={}
 	sprites["mouse"]={}
 	sprites["mouse"][1]= love.graphics.newQuad(155,75,36,36,sprites["img3"]:getDimensions())
 	sprites["mouse"][2]= love.graphics.newQuad(157,116,30,30,sprites["img3"]:getDimensions())
-	 
+
+	sprites["pausa"]=love.graphics.newImage("assets/img/pausa.png")
+	sprites["titulo"]=love.graphics.newImage("assets/img/title.png")
+	sprites["boton"]=love.graphics.newImage("assets/img/button.png")
+	sprites["muerte"]=love.graphics.newImage("assets/img/muerte.png")
+
+	sprites["fondo"]=love.graphics.newImage("assets/img/fondo.png")
+
 return sprites

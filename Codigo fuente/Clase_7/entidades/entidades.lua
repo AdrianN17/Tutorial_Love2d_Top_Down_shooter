@@ -101,6 +101,8 @@ function entidades:clear()
 	self.cantidad_zombies=0
 
 	self.collider:resetHash()
+	
+	
 
 	collectgarbage()
 end
@@ -176,7 +178,7 @@ function entidades:camera_visible(table_1)
 end
 
 function entidades:seek_player()
-	self.timer_enemigo:every(2, function() 
+	self.timer_enemigo:every(0.5, function() 
 		for _, zombie in ipairs(self.enemigos) do
 			if zombie.visible then
 				zombie.radio=math.atan2(self.player.oy-zombie.oy,self.player.ox-zombie.ox)
@@ -189,7 +191,7 @@ function entidades:seek_player()
 	self.timer_enemigo:every(0.5, function() 
 		for _, zombie in ipairs(self.enemigos) do
 			if not zombie.collision then
-				zombie.velocidad=250
+				zombie.velocidad=zombie.max_velocidad
 			end
 		end
 	end)

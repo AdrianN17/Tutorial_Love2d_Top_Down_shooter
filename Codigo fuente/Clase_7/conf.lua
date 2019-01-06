@@ -3,6 +3,7 @@ function love.conf(t)
   	t.author="AdrianN"
   	t.window.width = 900
   	t.window.height = 650
-  
-  	t.title="Juego de disparos"
+  	t.window.icon = "assets/img/icon.png"
+  	t.title="Kill the Zombies"
+  	t.identity="Kill_the_Zombies"
 end

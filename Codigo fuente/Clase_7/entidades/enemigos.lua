@@ -11,7 +11,7 @@ function enemigos:init(x,y)
 
 	self.body=base.entidades.collider:rectangle(x,y,35,43)
 
-	self.velocidad=250
+	self.velocidad=650
 
 	self.spritesheet=spritesheet.img
 	self.imgs=spritesheet.enemigo
@@ -34,12 +34,12 @@ function enemigos:init(x,y)
 
 	self.atacando=false
 
+	self.max_velocidad=self.velocidad
+
 end
 
 function enemigos:draw()
-	love.graphics.print(self.velocidad,self.ox,self.oy-100)
 	love.graphics.draw(self.spritesheet,self.imgs[self.posicion],self.ox,self.oy,self.radio,1,1,35/2,43/2)
-
 end
 
 function enemigos:update(dt)

@@ -18,7 +18,7 @@ function player:init(x,y,w,h)
 	self.velocidad=500
 	self.hp=10
 
-	self.estado={ correr = false, inmunidad = false, vida = true, disparo=false, recarga=false}
+	self.estado={ correr = false, inmunidad = false, vida = true, disparo=false, recarga=false, visible=true}
 
 	self.direccion={a = false, s = false, d = false, w = false}
 
@@ -37,7 +37,12 @@ function player:init(x,y,w,h)
 	self.recarga_vel={0.5,0.8,1}
 	self.daño={1,2.5,5}
 
+	self.max_velocidad=self.velocidad
+
 	self.score=0
+
+	sonido.pistola:setPitch(2)
+	sonido.rifle:setPitch(2)
 
 	base.entidades.timer_player:every(0.15, function() 
 		if not self.estado.disparo then
@@ -64,11 +69,19 @@ function player:init(x,y,w,h)
 		if self.estado.disparo and self.arma==2 then
 			self:create_bullet()
 		end
+
+		if self.estado.inmunidad then
+			self.estado.visible=not self.estado.visible
+		end
  	end)
 
  	base.entidades.timer_player:every(0.1, function()
  		if self.estado.disparo and self.arma==3 then
 			self:create_bullet()
+		end
+
+		if self.estado.recarga then
+			sonido.recarga:play()
 		end
  	end)
 
@@ -76,7 +89,9 @@ end
 
 function player:draw()
 	if self.estado.vida then
-		love.graphics.draw(self.spritesheet.img,self.spritesheet.player[self.posicion],self.ox,self.oy,self.radio,1,1,self.w/2,self.h/2)
+		if self.estado.visible then
+			love.graphics.draw(self.spritesheet.img,self.spritesheet.player[self.posicion],self.ox,self.oy,self.radio,1,1,self.w/2,self.h/2)
+		end
 	end
 end
 
@@ -123,6 +138,12 @@ function player:update(dt)
 		end
 
 	end
+
+	if self.hp<4 then
+		self.velocidad=300
+	else
+		self.velocidad=self.max_velocidad
+	end
 end
 
 function player:mousepressed(x,y,button)
@@ -130,11 +151,13 @@ function player:mousepressed(x,y,button)
 		if button==1 and self.arma>1 then
 			self.estado.disparo=true
 			self.estado.recarga=false
+
 		elseif button==1 and self.arma==1 then
 			self.estado.disparo=true
 			self:create_bullet()
 			self.estado.recarga=false
-		elseif button==2 and self.stock[self.arma] < self.max_stock[self.arma] and not self.estado.recarga then
+
+		elseif button==2 and self.stock[self.arma] < self.max_stock[self.arma] and not self.estado.recarga and self.municion[self.arma]>0 then
 			self.estado.recarga=true
 
 			base.entidades.timer_player:after(self.recarga_vel[self.arma] , function() 
@@ -228,6 +251,12 @@ end
 
 function player:create_bullet()
 	if self.stock[self.arma] > 0 then
+		if self.arma==1 then
+			sonido.pistola:play()
+		else
+			sonido.rifle:play()
+		end
+
 		base.entidades:add(Bala(self.ox,self.oy,self.arma,self.vel_bala[self.arma],self.radio,self.daño[self.arma]),"balas")
 		self.stock[self.arma]= self.stock[self.arma] -1
 	end
@@ -243,7 +272,7 @@ function player:damage(agresor)
 
 	self.estado.inmunidad=true
 
-	base.entidades.timer_player:after(1, function() self.estado.inmunidad=false end)
+	base.entidades.timer_player:after(1, function() self.estado.inmunidad=false self.estado.visible=true end)
 end
 
 return player
