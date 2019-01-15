@@ -89,6 +89,8 @@ function entidades:remove(e,tipo)
 end
 
 function entidades:clear()
+	self.collider:remove(self.player.body)
+	
 	self.map=nil
 	self.player=nil
 	self.enemigos={}

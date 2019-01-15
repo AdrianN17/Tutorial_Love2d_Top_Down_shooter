@@ -1,7 +1,6 @@
 local Gamestate = require "libs.gamestate"
 local menu = require "gamestate.menu"
 
-
 function love.load()
 	love.mouse.setVisible(false)
 	Gamestate.registerEvents()

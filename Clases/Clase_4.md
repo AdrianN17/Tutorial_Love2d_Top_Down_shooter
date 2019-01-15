@@ -503,3 +503,5 @@ return game
 ## Referencias:
 
 La manera de realizar y ordenar nuestro juego fue recogido del siguiente [Tutorial](http://osmstudios.net/page/tutorials).
+
+[Tutorial STI love2d](http://lua.space/gamedev/using-tiled-maps-in-love)
